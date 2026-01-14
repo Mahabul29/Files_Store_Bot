@@ -133,35 +133,36 @@ async def start_command(client: Client, message: Message):
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
+    # This structure puts Join Channel 1 and 2 side-by-side
     buttons = [
         [
-            InlineKeyboardButton(text="JOIN CHANNEL 1 ↗️", url="https://t.me/Channel1Link"),
-            InlineKeyboardButton(text="JOIN CHANNEL 2 ↗️", url="https://t.me/Channel2Link")
+            InlineKeyboardButton(text="JOIN CHANNEL 1 ↗️", url="https://t.me/YourChannelLink1"),
+            InlineKeyboardButton(text="JOIN CHANNEL 2 ↗️", url="https://t.me/YourChannelLink2")
         ]
     ]
     try:
-        # This adds the "Try Again" button automatically if there is a start parameter
+        # Adds the "Try Again" button on a separate row below
         buttons.append([
             InlineKeyboardButton(
-                text="🔄 Try Again",
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
-        )
-    except IndexError:
+                text="🔄 Try Again", 
+                url=f"https://t.me/{client.username}?start={message.command[1] if len(message.command) > 1 else ''}"
+            )
+        ])
+    except Exception:
         pass
 
+    # Using reply_photo instead of reply to add the picture
     await message.reply_photo(
-    photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", 
-    caption=FORCE_MSG.format(
-        first=message.from_user.first_name,
-        last=message.from_user.last_name or "",
-        username=None if not message.from_user.username else '@' + message.from_user.username,
-        mention=message.from_user.mention,
-        id=message.from_user.id
-    ),
-    reply_markup=InlineKeyboardMarkup(buttons),
-    quote=True
+        photo="https://telegra.ph/file/your-image-id.jpg", # Put your image link here
+        caption=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name or "",
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons),
+        quote=True
     )
     
 
