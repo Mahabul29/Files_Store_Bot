@@ -120,7 +120,7 @@ async def start_command(client: Client, message: Message):
             ]
         )
         await message.reply_photo(
-            photo="https://graph.org/file/your-image-url.jpg",
+            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
             caption=START_MSG.format(
                 mention=message.from_user.mention,
                 id=message.from_user.id
@@ -129,9 +129,14 @@ async def start_command(client: Client, message: Message):
             quote=False
         )
          return
-
-    
-Bot.on_message(filters.command('start') & filters.private)
+        
+        
+        
+        
+        
+        
+        
+        @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     buttons = [
         [
