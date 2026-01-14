@@ -1,9 +1,3 @@
-<img src="th" alt="logo" target="/blank">
-
-<h1 align="center">
- <b><a href="" target="/blank"> File Sharing Bot </a></>
-</h1>
-
 <p align="center">🩵 Thanks for Being Here 🩵</p>
 
 
