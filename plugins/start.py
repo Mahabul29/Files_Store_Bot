@@ -151,7 +151,7 @@ async def not_joined(client: Client, message: Message):
 
     # Sending the Photo
     await message.reply_photo(
-        photo=os.environ.get("FORCE_SUB_PIC", "https://telegra.ph/file/your-default-image.jpg"),
+        photo=os.environ.get("FORCE_SUB_PIC", "https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html"),
         caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             id=message.from_user.id
