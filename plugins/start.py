@@ -147,10 +147,7 @@ async def not_joined(client: Client, message: Message):
                 )
             ]
         )
-    except IndexError:
-        pass
-
-            await message.reply_photo(
+        await message.reply_photo(
             photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
             caption=FORCE_MSG.format(
                 first = message.from_user.first_name,
