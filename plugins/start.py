@@ -1,5 +1,5 @@
 import os, asyncio, humanize
-from pyrogram import Client, filters, __version__
+from pyrogram import Client, filters, version
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
@@ -99,9 +99,9 @@ async def start_command(client: Client, message: Message):
                 # await madflix_msg.delete()
                 # await k.edit_text("Your Video / File Is Successfully Deleted ✅") 
             # except:    
-                # pass 
+                # pass
 
-        return
+return
     else:
         reply_markup = InlineKeyboardMarkup(
             [
@@ -111,17 +111,17 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-        await message.reply_text(
-            text = START_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
+        await message.reply_photo(
+            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", # Replace with your image link
+            caption=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name or "",
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
             ),
-            reply_markup = reply_markup,
-            disable_web_page_preview = True,
-            quote = True
+            reply_markup=reply_markup,
+            quote=True
         )
         return
 
@@ -135,33 +135,44 @@ async def start_command(client: Client, message: Message):
 async def not_joined(client: Client, message: Message):
     buttons = [
         [
-            InlineKeyboardButton(text="Join Channel", url=client.invitelink)
+            InlineKeyboardButton(text="📢 Join Our Channel", url=client.invitelink)
         ]
     ]
     try:
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    text = 'Try Again',
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
-        )
-    except IndexError:
+        # This keeps the user on the same file they were trying to access
+        buttons.append([
+            InlineKeyboardButton(
+                text="🔄 Try Again", 
+                url=f"https://t.me/{client.username}?start={message.command[1] if len(message.command) > 1 else ''}"
+            )
+        ])
+    except Exception:
         pass
 
-    await message.reply(
-        text = FORCE_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
-            ),
-        reply_markup = InlineKeyboardMarkup(buttons),
-        quote = True,
-        disable_web_page_preview = True
+    # Sending the Photo
+    await message.reply_photo(
+        photo=os.environ.get("FORCE_SUB_PIC", "https://telegra.ph/file/your-default-image.jpg"),
+        caption=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons)
     )
+
+    # Using reply_photo instead of reply to add the picture
+    await message.reply_photo(
+        photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", # Put your image link here
+        caption=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name or "",
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons),
+        quote=True
+    )
+    
 
 
 
@@ -234,4 +245,3 @@ async def delete_files(messages, client, k):
             print(f"The attempt to delete the media {msg.id} was unsuccessful: {e}")
     # await client.send_message(messages[0].chat.id, "Your Video / File Is Successfully Deleted ✅")
     await k.edit_text("Your Video / File Is Successfully Deleted ✅")
-
