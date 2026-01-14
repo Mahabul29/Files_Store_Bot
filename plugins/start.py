@@ -147,8 +147,8 @@ async def not_joined(client: Client, message: Message):
                 )
             ]
         )
-        await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+                await message.reply_photo(
+            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", # Replace with your direct image link
             caption=FORCE_MSG.format(
                 first = message.from_user.first_name,
                 last = message.from_user.last_name,
@@ -158,7 +158,7 @@ async def not_joined(client: Client, message: Message):
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
             quote=True
-            )
+                )
         
 
 
