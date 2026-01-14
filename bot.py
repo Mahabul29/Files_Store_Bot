@@ -59,7 +59,7 @@ class Bot(Client):
         self.LOGGER(__name__).info(f"""ミ💖 MADFLIX BOTZ 💖彡""")
         self.username = usr_bot_me.username
         #web-response
-        app = web.AppRunner(await web_server())
+        app = web.AppRunner(await web_server.web_server())
         await app.setup()
         bind_address = "0.0.0.0"
         await web.TCPSite(app, bind_address, PORT).start()
