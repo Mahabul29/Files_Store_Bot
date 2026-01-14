@@ -111,8 +111,8 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-        await message.reply_photo(
-            photo="https://graph.org/file/your-image-url.jpg",
+                await message.reply_photo(
+            photo="https://graph.org/file/your-image-url.jpg", # Replace with your image link
             caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
@@ -121,8 +121,9 @@ async def start_command(client: Client, message: Message):
                 id=message.from_user.id
             ),
             reply_markup=reply_markup,
-            quote=False # Set this to False to remove the reply/forward styling
-        )
+            quote=False # Set to False to remove the "Forwarded" style bar
+                )
+        
         return
 
     
