@@ -1,7 +1,7 @@
 <img src="https://graph.org/file/cd2b471f3474d69740df5.jpg" alt="logo" target="/blank">
 
 <h1 align="center">
- <b><a href="https://t.me/Madflix_Bots" target="/blank"> File Sharing Bot </a></>
+ <b><a href="https://t.me/EvaLinks" target="/blank"> File Sharing Bot </a></>
 </h1>
 
 <p align="center">🩵 Thanks for Being Here 🩵</p>
@@ -109,18 +109,5 @@ stats - checking your bot uptime
 
 
 ### ❤️ RESPECTING ❤️
-- [JishuDeveloper](https://github.com/JishuDeveloper)
-- [Madflix Official](https://github.com/jishusinha)
-
-### 😍 BOTS CHANNEL 😍
-- [Madflix Botz](https://t.me/Madflix_Bots)
-- [Jishu Botz](https://t.me/JishuBotz)
-
-### 💕 CONTACT DEVELOPER 💕
-- [Jishu Developer](https://t.me/JishuDeveloper)
-- [Madflix Official](https://t.me/MadflixOfficials)
-
-### ☕ BUY ME A COFFEE ☕
-- [PayPal](https://paypal.me/jishudeveloper/2.50USD)
-- [PhonePe](https://graph.org/file/6822df5af3a2e80637172.jpg)
-- [UPI](https://graph.org/file/b831109be4acff5c966d2.jpg)
+- [Moon_Night](https://github.com/Mahabul29)
+- [EvaLinks](https://github.com/Mahabul29)
