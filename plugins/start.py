@@ -106,7 +106,7 @@ async def start_command(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("👋 About Me", callback_data = "about"),
+                    InlineKeyboardButton("🔒 Close", callback_data = "about"),
                     InlineKeyboardButton("🔒 Close", callback_data = "close")
                 ]
             ]
@@ -234,15 +234,3 @@ async def delete_files(messages, client, k):
             print(f"The attempt to delete the media {msg.id} was unsuccessful: {e}")
     # await client.send_message(messages[0].chat.id, "Your Video / File Is Successfully Deleted ✅")
     await k.edit_text("Your Video / File Is Successfully Deleted ✅")
-@Bot.on_callback_query()
-async def cb_handler(client, query):
-    if query.data == "about":
-        await query.message.edit_text(
-            text="<b>About This Bot</b>\n\nI am a File Store Bot. I can store files in a database channel and provide links for users to access them.",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Close", callback_data="close")]
-            ])
-        )
-    elif query.data == "close":
-        await query.message.delete()
-        
