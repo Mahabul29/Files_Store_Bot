@@ -133,20 +133,31 @@ async def start_command(client: Client, message: Message):
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    # This structure puts Join Channel 1 and 2 side-by-side
     buttons = [
         [
-            InlineKeyboardButton(text="JOIN CHANNEL 1 ↗️", url="https://t.me/YourChannelLink1"),
+            InlineKeyboardButton(text="📢 Join Our Channel", url=client.invitelink)
         ]
     ]
     try:
-        # Adds the "Try Again" button on a separate row below
+        # This keeps the user on the same file they were trying to access
         buttons.append([
             InlineKeyboardButton(
                 text="🔄 Try Again", 
                 url=f"https://t.me/{client.username}?start={message.command[1] if len(message.command) > 1 else ''}"
             )
         ])
+    except Exception:
+        pass
+
+    # Sending the Photo
+    await message.reply_photo(
+        photo=os.environ.get("FORCE_SUB_PIC", "https://telegra.ph/file/your-default-image.jpg"),
+        caption=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
     except Exception:
         pass
 
