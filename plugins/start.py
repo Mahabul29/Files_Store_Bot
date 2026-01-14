@@ -158,8 +158,6 @@ async def not_joined(client: Client, message: Message):
         ),
         reply_markup=InlineKeyboardMarkup(buttons)
     )
-    except Exception:
-        pass
 
     # Using reply_photo instead of reply to add the picture
     await message.reply_photo(
