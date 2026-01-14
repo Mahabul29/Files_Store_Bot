@@ -101,7 +101,7 @@ async def start_command(client: Client, message: Message):
             # except:    
                 # pass 
 
-                return
+                        return
     else:
         try:
             reply_markup = InlineKeyboardMarkup(
@@ -113,7 +113,7 @@ async def start_command(client: Client, message: Message):
                 ]
             )
             await message.reply_photo(
-                photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+                photo="https://graph.org/file/cd2b471f3474d69740df5.jpg",
                 caption=START_MSG.format(
                     first=message.from_user.first_name,
                     last=message.from_user.last_name or "",
