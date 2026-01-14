@@ -35,6 +35,10 @@ except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
 
 
+# Starting from Line 37 in your config.py
+FORCE_SUB_PIC = os.environ.get("FORCE_SUB_PIC", "https://telegra.ph/file/default.jpg")
+CHANNEL_1_LINK = os.environ.get("CHANNEL_1_LINK", "https://t.me/DefaultLink1")
+CHANNEL_2_LINK = os.environ.get("CHANNEL_2_LINK", "https://t.me/DefaultLink2")
 
 
 
