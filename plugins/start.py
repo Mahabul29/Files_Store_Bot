@@ -154,7 +154,7 @@ async def not_joined(client: Client, message: Message):
         except IndexError:
         pass
                 await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", # Replace with your direct image link
+            photo="https://graph.org/file/cd2b471f3474d69740df5.jpg", # Replace with your direct image link
             caption=FORCE_MSG.format(
                 first = message.from_user.first_name,
                 last = message.from_user.last_name,
