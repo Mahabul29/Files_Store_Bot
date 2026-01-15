@@ -150,17 +150,23 @@ async def not_joined(client: Client, message: Message):
     except IndexError:
         pass
 
-            await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", # Ensure this is indented correctly
-            caption=FORCE_MSG.format(            # Align this exactly with 'photo'
-                first=message.from_user.first_name,
-                last=message.from_user.last_name,
-                # ... rest of your format arguments
-            ),
-            reply_markup=InlineKeyboardMarkup(buttons),
-            quote=True,
-            disable_web_page_preview=True
-            )
+                try:
+        buttons.append(
+            [
+                InlineKeyboardButton(text="Try Again", url=...)
+            ]
+        )
+    except IndexError:
+        pass
+
+    # Ensure this line starts at the EXACT same column as the 'try' above
+    await message.reply_photo(
+        photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+        caption=FORCE_MSG.format(...),
+        reply_markup=InlineKeyboardMarkup(buttons),
+        # ... rest of the arguments
+    )
+    
         
 
 
