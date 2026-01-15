@@ -150,14 +150,18 @@ async def not_joined(client: Client, message: Message):
     except IndexError:
         pass
 
-                try:
+                    try:
         buttons.append(
             [
-                InlineKeyboardButton(text="Try Again", url=...)
+                InlineKeyboardButton(
+                    text = 'Try Again',
+                    url = f"https://t.me/{client.username}?start={message.command[1]}"
+                )
             ]
         )
     except IndexError:
         pass
+        
 
     # Ensure this line starts at the EXACT same column as the 'try' above
     await message.reply_photo(
