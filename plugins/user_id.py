@@ -15,14 +15,3 @@ async def showid(client, message):
             f"<b>Your User ID Is :</b> <code>{user_id}</code>", 
             quote=True
         )
-        
-
-
-
-
-
-# Jishu Developer 
-# Don't Remove Credit 🥺
-# Telegram Channel @Madflix_Bots
-# Backup Channel @JishuBotz
-# Developer @JishuDeveloper
