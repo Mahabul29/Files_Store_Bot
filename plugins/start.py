@@ -11,7 +11,8 @@ from database.database import add_user, del_user, full_userbase, present_user
 # --- CONFIGURATION ---
 VERIFIED_USERS = {}  # Stores user_id: timestamp
 VERIFY_EXPIRE = 10800  # 3 Hours in seconds
-SHORTENER_API = "https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8e5d45dc&url=yourdestinationlink.com&alias=CustomAlias}"
+# Correct API format for Shortxlinks
+SHORTENER_API = "https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8&url={url}&format=json"
 # ---------------------
 
 madflixofficials = FILE_AUTO_DELETE
@@ -28,7 +29,7 @@ async def start_command(client: Client, message: Message):
             pass
             
     text = message.text
-    if len(text)>7:
+    if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
         except:
@@ -40,37 +41,32 @@ async def start_command(client: Client, message: Message):
         
         # Check if user needs verification
         last_ver = VERIFIED_USERS.get(user_id, 0)
+        
         if (curr_time - last_ver) > VERIFY_EXPIRE:
             # Check if they are returning from a shortener link
             if base64_string.startswith("verify_"):
                 VERIFIED_USERS[user_id] = curr_time
                 # Strip the verify_ prefix to get the real base64 data
                 base64_string = base64_string.replace("verify_", "")
-                        else:
+            else:
                 # Generate the deep-link that the shortener will redirect back to
                 verify_link = f"https://t.me/{client.username}?start=verify_{base64_string}"
                 
                 try:
-                    # Using format=json is critical for Shortxlinks to return a parseable response
-                    api_url = f"https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8&url={verify_link}&format=json"
-                    r = requests.get(api_url, timeout=10)
+                    r = requests.get(SHORTENER_API.format(url=verify_link), timeout=10)
                     data = r.json()
-                    
-                    # Extract the shortened link from the JSON response
+                    # Extract the shortened link
                     short_url = data.get("shortenedUrl", verify_link)
                 except Exception as e:
-                    # If API fails, we use the unshortened link as a fallback
                     print(f"Shortener API Error: {e}")
                     short_url = verify_link
                 
-                # Create the button with the shortened URL
                 btn = [[InlineKeyboardButton("🔓 Unlock Files (3 Hours)", url=short_url)]]
                 
                 return await message.reply_text(
                     f"<b>Verify to Continue!</b>\n\nYour session has expired. Please verify via the link below to access files for the next 3 hours.",
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
-            
         # --- END LINK SHORTENER LOGIC ---
 
         string = await decode(base64_string)
@@ -82,7 +78,7 @@ async def start_command(client: Client, message: Message):
             except:
                 return
             if start <= end:
-                ids = range(start,end+1)
+                ids = range(start, end + 1)
             else:
                 ids = []
                 i = start
@@ -108,28 +104,28 @@ async def start_command(client: Client, message: Message):
         madflix_msgs = [] 
 
         for msg in messages:
-            if bool(CUSTOM_CAPTION) & bool(msg.document):
-                caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name)
+            if bool(CUSTOM_CAPTION) and bool(msg.document):
+                caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
             else:
                 caption = "" if not msg.caption else msg.caption.html
 
             reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
             try:
-                madflix_msg = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
+                madflix_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 madflix_msgs.append(madflix_msg)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
-                madflix_msg = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
+                madflix_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 madflix_msgs.append(madflix_msg)
             except:
                 pass
 
-        k = await client.send_message(chat_id = message.from_user.id, text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete}.\n\n📌 Please Forward This Video / File To Somewhere Else.")
+        k = await client.send_message(chat_id=message.from_user.id, text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete}.\n\n📌 Please Forward This Video / File To Somewhere Else.")
         asyncio.create_task(delete_files(madflix_msgs, client, k))
         return
     else:
-        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data = "about"), InlineKeyboardButton("🔒 Close", callback_data = "close")]])
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]])
         await message.reply_photo(
             photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
             caption=START_MSG.format(
@@ -148,7 +144,7 @@ async def start_command(client: Client, message: Message):
 async def not_joined(client: Client, message: Message):
     buttons = [[InlineKeyboardButton(text="Join Channel", url=client.invitelink)]]
     try:
-        buttons.append([InlineKeyboardButton(text = 'Try Again', url = f"https://t.me/{client.username}?start={message.command[1]}")])
+        buttons.append([InlineKeyboardButton(text='Try Again', url=f"https://t.me/{client.username}?start={message.command[1]}")])
     except IndexError:
         pass
 
@@ -165,14 +161,15 @@ async def not_joined(client: Client, message: Message):
         quote=False
     )
 
-# --- Remaining Admin and Broadcast commands stay the same ---
-
 async def delete_files(messages, client, k):
     await asyncio.sleep(FILE_AUTO_DELETE)
     for msg in messages:
         try:
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
-        except Exception as e:
-            print(f"Delete failed: {e}")
-    await k.edit_text("Your Video / File Is Successfully Deleted ✅")
-    
+        except:
+            pass
+    try:
+        await k.edit_text("Your Video / File Is Successfully Deleted ✅")
+    except:
+        pass
+        
