@@ -23,26 +23,39 @@ async def manual_shortener(client: Client, message: Message):
         return await message.reply_text("<b>Usage:</b>\n<code>/shortener https://yourlink.com</code>")
     
     url = message.text.split(None, 1)[1]
+    # --- MANUAL SHORTENER COMMAND ---
+@Bot.on_message(filters.command('shortener') & filters.private)
+async def manual_shortener(client: Client, message: Message):
+    if len(message.command) < 2:
+        return await message.reply_text("<b>Usage:</b>\n<code>/shortener https://yourlink.com</code>")
+    
+    url = message.text.split(None, 1)[1]
     msg = await message.reply("<code>Generating Short Link...</code>")
     
     try:
-        # Construct API call using the SHORTENER_API from your config
-        api_url = f"{SHORTENER_API}&url={url}"
-        r = requests.get(api_url, timeout=10)
+        # Check if the API link already contains a '?' to avoid URL errors
+        separator = "&" if "?" in SHORTENER_API else "?"
+        api_url = f"{SHORTENER_API}{separator}url={url}"
+        
+        r = requests.get(api_url, timeout=15)
         data = r.json()
         
-        # Look for the shortened URL in the response
-        short_url = data.get("shortened_url") or data.get("url") or data.get("short_url")
+        # Shortxlinks often uses 'shortened_url' or 'url'
+        short_url = data.get("shortened_url") or data.get("url")
         
         if short_url:
             btn = [[InlineKeyboardButton("🔗 Open Short Link", url=short_url)]]
             await msg.edit_text(
-                f"<b>✅ Link Shortened!</b>\n\n<b>Original:</b> {url}\n<b>Shortened:</b> {short_url}",
-                reply_markup=InlineKeyboardMarkup(btn),
-                disable_web_page_preview=True
+                f"<b>✅ Link Shortened!</b>\n\n<code>{short_url}</code>",
+                reply_markup=InlineKeyboardMarkup(btn)
             )
         else:
-            await msg.edit_text("<b>❌ Error:</b> Could not retrieve short link from API. Check your API key.")
+            await msg.edit_text("<b>❌ API Error:</b> The shortener returned an empty link. Check your API Key.")
+            
+    except Exception as e:
+        # This will show you exactly why it's "down" in your Telegram chat
+        await msg.edit_text(f"<b>❌ Error:</b> {str(e)}")
+        
             
     except Exception as e:
         await msg.edit_text(f"<b>❌ API Error:</b> {str(e)}")
