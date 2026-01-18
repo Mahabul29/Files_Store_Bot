@@ -12,7 +12,7 @@ from database.database import add_user, del_user, full_userbase, present_user
 VERIFIED_USERS = {}  # Stores user_id: timestamp
 VERIFY_EXPIRE = 10800  # 3 Hours in seconds
 # Correct API URL for Shortxlinks
-SHORTENER_API = "https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8&url={url}&format=json"
+SHORTENER_API = "https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8&url={url}"
 # ---------------------
 
 madflixofficials = FILE_AUTO_DELETE
@@ -54,7 +54,13 @@ async def start_command(client: Client, message: Message):
                 try:
                     r = requests.get(SHORTENER_API.format(url=verify_link), timeout=10)
                     data = r.json()
-                    short_url = data.get("shortenedUrl", verify_link)
+                    
+                    # FIXED: Added multiple key checks for different shortener response formats
+                    short_url = data.get("shortened_url") or data.get("short_url") or data.get("url") or data.get("shortenedUrl")
+                    
+                    # Safety check: if API fails or returns null, use direct link to prevent crash
+                    if not short_url:
+                        short_url = verify_link
                 except Exception as e:
                     print(f"Shortener API Error: {e}")
                     short_url = verify_link
@@ -125,7 +131,7 @@ async def start_command(client: Client, message: Message):
     else:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]])
         await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+            photo="https://telegra.ph/file/30ec3e20600122e2c0406.jpg", # Use a direct image link
             caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
@@ -147,7 +153,7 @@ async def not_joined(client: Client, message: Message):
         pass
 
     await message.reply_photo(
-        photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+        photo="https://telegra.ph/file/30ec3e20600122e2c0406.jpg", # Use a direct image link
         caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name or "",
@@ -166,7 +172,6 @@ async def delete_files(messages, client, k):
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
         except:
             pass
-    # [span_1](start_span)Fixed lines 171-174 to prevent the MessageIdInvalid error[span_1](end_span)
     try:
         await k.edit_text("Your Video / File Is Successfully Deleted ✅")
     except Exception:
