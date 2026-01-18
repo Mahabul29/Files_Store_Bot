@@ -11,7 +11,7 @@ from database.database import add_user, del_user, full_userbase, present_user
 # --- CONFIGURATION ---
 VERIFIED_USERS = {}  # Stores user_id: timestamp
 VERIFY_EXPIRE = 10800  # 3 Hours in seconds
-# Correct API format for Shortxlinks
+# Correct API URL for Shortxlinks
 SHORTENER_API = "https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8&url={url}&format=json"
 # ---------------------
 
@@ -46,16 +46,14 @@ async def start_command(client: Client, message: Message):
             # Check if they are returning from a shortener link
             if base64_string.startswith("verify_"):
                 VERIFIED_USERS[user_id] = curr_time
-                # Strip the verify_ prefix to get the real base64 data
                 base64_string = base64_string.replace("verify_", "")
             else:
-                # Generate the deep-link that the shortener will redirect back to
+                # Generate link for the shortener
                 verify_link = f"https://t.me/{client.username}?start=verify_{base64_string}"
                 
                 try:
                     r = requests.get(SHORTENER_API.format(url=verify_link), timeout=10)
                     data = r.json()
-                    # Extract the shortened link
                     short_url = data.get("shortenedUrl", verify_link)
                 except Exception as e:
                     print(f"Shortener API Error: {e}")
@@ -168,9 +166,9 @@ async def delete_files(messages, client, k):
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
         except:
             pass
-        # This replaces your current lines 171-174
+    # [span_1](start_span)Fixed lines 171-174 to prevent the MessageIdInvalid error[span_1](end_span)
     try:
         await k.edit_text("Your Video / File Is Successfully Deleted ✅")
     except Exception:
-        # This prevents the bot from crashing if the message is already gone
         pass
+        
