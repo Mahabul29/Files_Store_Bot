@@ -144,7 +144,7 @@ async def delete_files(messages, client, k):
             print(f"Error deleting media {msg.id}: {e}")
     
     # Update notification to show the Recall Button
-    try:
+        try:
         await k.edit_text(
             text=(
                 "**Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ** 🗑️\n\n"
@@ -154,5 +154,5 @@ async def delete_files(messages, client, k):
             reply_markup=RECALL_BUTTON
         )
     except Exception as e:
-        print(f"Error editing deletion message: {e}")
-        
+        print(f"Error updating deletion message: {e}")
+    
