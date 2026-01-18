@@ -3,11 +3,10 @@ from bot import Bot
 from config import OWNER_ID
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-
-
 @Bot.on_callback_query()
 async def cb_handler(client: Bot, query: CallbackQuery):
     data = query.data
+    
     if data == "about":
         await query.message.edit_text(
             text = f"<b>🤖 My Name :</b> <a href='https://t.me/Files_Store9_Bot'>File Sharing Bot</a> \n<b>📝 Language :</b> <a href='https://python.org'>Python 3</a> \n<b>📚 Library :</b> <a href='https://pyrogram.org'>Pyrogram {__version__}</a> \n<b>🚀 Server :</b> <a href='https://koyeb.com'>Koyeb</a> \n<b>📢 Channel :</b> <a href='https://t.me/Hindi_Dub_Animes_Official'>Hindi Animes</a> \n<b>🧑‍💻 Developer :</b> <a href='tg://user?id={OWNER_ID}'>@Mahabul201</a>",
@@ -20,9 +19,28 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 ]
             )
         )
+    
+    # Logic for resending files when "Click Here" is pressed
+    elif data == "refresh_files":
+        await query.answer("Resending your files...", show_alert=False)
+        await query.message.delete()
+        
+        # We import here to avoid circular import issues
+        try:
+            from plugins.start import start 
+            await start(client, query.message)
+        except Exception as e:
+            print(f"Error triggering start: {e}")
+
+    # Logic for the "Close X" button in the deleted message notice
+    elif data == "close_msg":
+        await query.message.delete()
+
+    # Logic for the standard "Close" button
     elif data == "close":
         await query.message.delete()
         try:
             await query.message.reply_to_message.delete()
         except:
             pass
+            
