@@ -9,11 +9,6 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 API_ID = int(os.environ.get("API_ID", ""))
 API_HASH = os.environ.get("API_HASH", "")
 
-# --- ADD THESE LINES HERE ---
-SHORTENER_API = os.environ.get("SHORTENER_API", "")
-SHORTENER_URL = os.environ.get("SHORTENER_URL", "")
-START_PIC = os.environ.get("START_PIC", "https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html")
-
 
 OWNER_ID = int(os.environ.get("OWNER_ID", ""))
 DB_URL = os.environ.get("DB_URL", "")
@@ -25,7 +20,7 @@ FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
 
 
 FILE_AUTO_DELETE = int(os.getenv("FILE_AUTO_DELETE", "600")) # auto delete in seconds
-
+START_PIC = os.environ.get("START_PIC", "https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html")
 
 PORT = os.environ.get("PORT", "8080")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
