@@ -1,8 +1,8 @@
 import asyncio
 from aiohttp import web
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from config import DELETE_TIME # Make sure DELETE_TIME is defined in your config
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+[span_0](start_span)from config import DELETE_TIME  #[span_0](end_span)
 
 # --- 1. DEFINE THE BUTTONS ---
 RECALL_BUTTON = InlineKeyboardMarkup([
@@ -20,25 +20,24 @@ async def root_route_handler(request):
     return web.json_response("Madflix_Bots")
 
 # --- 3. AUTO-DELETE & RECALL LOGIC ---
-# Inside the function where you send the file (usually hello_revive or similar)
 async def send_media_and_handle_delete(client, message, file_id):
+    """Sends media and starts the background auto-delete timer."""
     # Send the actual file
     file_msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
-        caption="**Your file is ready! It will be deleted shortly.**"
+        caption="**Your file is ready! It will be deleted shortly for security.**"
     )
 
-    # Background task to wait, delete, and show the RECALL BUTTON
     async def delete_after_delay():
-        # Delay from config or default to 30 minutes (1800 seconds)
+        # [span_1](start_span)Delay from config[span_1](end_span) or default to 1800 seconds
         await asyncio.sleep(int(DELETE_TIME) if DELETE_TIME else 1800)
         
         try:
             # Delete the media message
             await file_msg.delete()
             
-            # SEND THE RECALL MESSAGE INSTEAD OF THE "SUCCESSFULLY DELETED" TEXT
+            # Send the recall notification with the button
             await client.send_message(
                 chat_id=message.from_user.id,
                 text=(
@@ -51,6 +50,19 @@ async def send_media_and_handle_delete(client, message, file_id):
         except Exception as e:
             print(f"Error in deletion task: {e}")
 
-    # Fire and forget the task so the bot stays responsive
+    # Start background task
     asyncio.create_task(delete_after_delay())
-    
+
+# --- 4. NEW CODE: THE HANDLER ---
+# This part connects the bot's start command to your deletion logic
+@Client.on_message(filters.command("start") & filters.private)
+async def start_handler(client: Client, message: Message):
+    # Check if the start command has a file ID (e.g., /start file_id_123)
+    if len(message.command) > 1:
+        file_id = message.command[1]
+        
+        # This calls your auto-delete function automatically
+        await send_media_and_handle_delete(client, message, file_id)
+    else:
+        await message.reply_text("Send me a valid file link to get started!")
+        
