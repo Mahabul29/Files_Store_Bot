@@ -46,20 +46,31 @@ async def start_command(client: Client, message: Message):
                 VERIFIED_USERS[user_id] = curr_time
                 # Strip the verify_ prefix to get the real base64 data
                 base64_string = base64_string.replace("verify_", "")
-            else:
-                # Generate link for the shortener
+                        else:
+                # Generate the deep-link that the shortener will redirect back to
                 verify_link = f"https://t.me/{client.username}?start=verify_{base64_string}"
+                
                 try:
-                    r = requests.get(SHORTENER_API.format(url=verify_link))
-                    short_url = r.json().get("shortenedUrl", verify_link)
-                except:
+                    # Using format=json is critical for Shortxlinks to return a parseable response
+                    api_url = f"https://shortxlinks.com/api?api=2392d1c0c3394bf02eb10ba9052123ab8&url={verify_link}&format=json"
+                    r = requests.get(api_url, timeout=10)
+                    data = r.json()
+                    
+                    # Extract the shortened link from the JSON response
+                    short_url = data.get("shortenedUrl", verify_link)
+                except Exception as e:
+                    # If API fails, we use the unshortened link as a fallback
+                    print(f"Shortener API Error: {e}")
                     short_url = verify_link
                 
+                # Create the button with the shortened URL
                 btn = [[InlineKeyboardButton("🔓 Unlock Files (3 Hours)", url=short_url)]]
+                
                 return await message.reply_text(
                     f"<b>Verify to Continue!</b>\n\nYour session has expired. Please verify via the link below to access files for the next 3 hours.",
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
+            
         # --- END LINK SHORTENER LOGIC ---
 
         string = await decode(base64_string)
