@@ -1,4 +1,4 @@
-import os, asyncio, humanize, time, requests
+import os, asyncio, humanize, time
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
@@ -7,7 +7,7 @@ from bot import Bot
 from config import (
     ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, 
     DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE,
-    SHORTENER_API, START_PIC
+    START_PIC
 )
 from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, present_user
@@ -15,55 +15,9 @@ from database.database import add_user, present_user
 # --- SETUP ---
 file_auto_delete = humanize.naturaldelta(FILE_AUTO_DELETE)
 
-# --- MANUAL SHORTENER COMMAND ---
-@Bot.on_message(filters.command('shortener') & filters.private)
-async def manual_shortener(client: Client, message: Message):
-    """Command to manually shorten a URL using the API from Environment Variables."""
-    if len(message.command) < 2:
-        return await message.reply_text("<b>Usage:</b>\n<code>/shortener https://yourlink.com</code>")
-    
-    url = message.text.split(None, 1)[1]
-    # --- MANUAL SHORTENER COMMAND ---
-@Bot.on_message(filters.command('shortener') & filters.private)
-async def manual_shortener(client: Client, message: Message):
-    if len(message.command) < 2:
-        return await message.reply_text("<b>Usage:</b>\n<code>/shortener https://yourlink.com</code>")
-    
-    url = message.text.split(None, 1)[1]
-    msg = await message.reply("<code>Generating Short Link...</code>")
-    
-    try:
-        # Check if the API link already contains a '?' to avoid URL errors
-        separator = "&" if "?" in SHORTENER_API else "?"
-        api_url = f"{SHORTENER_API}{separator}url={url}"
-        
-        r = requests.get(api_url, timeout=15)
-        data = r.json()
-        
-        # Shortxlinks often uses 'shortened_url' or 'url'
-        short_url = data.get("shortened_url") or data.get("url")
-        
-        if short_url:
-            btn = [[InlineKeyboardButton("🔗 Open Short Link", url=short_url)]]
-            await msg.edit_text(
-                f"<b>✅ Link Shortened!</b>\n\n<code>{short_url}</code>",
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
-        else:
-            await msg.edit_text("<b>❌ API Error:</b> The shortener returned an empty link. Check your API Key.")
-            
-    except Exception as e:
-        # This will show you exactly why it's "down" in your Telegram chat
-        await msg.edit_text(f"<b>❌ Error:</b> {str(e)}")
-        
-            
-    except Exception as e:
-        await msg.edit_text(f"<b>❌ API Error:</b> {str(e)}")
-
-# --- START COMMAND (DIRECT FILE DELIVERY) ---
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
-    """The Start command now provides files directly without link shortener redirection."""
+    """The Start command provides files directly and immediately."""
     user_id = message.from_user.id
     if not await present_user(user_id):
         try:
@@ -78,8 +32,7 @@ async def start_command(client: Client, message: Message):
         except:
             return
         
-        # --- DIRECT FILE DELIVERY LOGIC ---
-        # This part decodes the link and sends files immediately
+        # --- DIRECT FILE DELIVERY ---
         string = await decode(base64_string)
         argument = string.split("-")
         
@@ -98,17 +51,17 @@ async def start_command(client: Client, message: Message):
         else:
             return
 
-        temp_msg = await message.reply("<b>Sending your files, please wait...</b>")
+        temp_msg = await message.reply("<b>Processing your request...</b>")
         try:
             messages = await get_messages(client, ids)
         except:
-            await message.reply_text("Something went wrong while fetching files.")
+            await message.reply_text("Something went wrong fetching files.")
             return
         await temp_msg.delete()
     
         madflix_msgs = [] 
         for msg in messages:
-            # Apply custom caption if set
+            # Custom Caption Logic
             caption = CUSTOM_CAPTION.format(
                 previouscaption="" if not msg.caption else msg.caption.html, 
                 filename=msg.document.file_name if msg.document else "File"
@@ -128,56 +81,5 @@ async def start_command(client: Client, message: Message):
             except FloodWait as e:
                 await asyncio.sleep(e.x)
                 copied_msg = await msg.copy(chat_id=user_id, caption=caption, reply_markup=reply_markup)
-                madflix_msgs.append(copied_msg)
-            except:
-                pass
-
-        # Send deletion notification
-        k = await client.send_message(
-            chat_id=user_id, 
-            text=f"<b>❗️ IMPORTANT ❗️</b>\n\nYour files will be automatically deleted in {file_auto_delete}."
-        )
-        # Start the auto-delete timer
-        asyncio.create_task(delete_files(madflix_msgs, client, k))
-        return
-    else:
-        # Standard Welcome Message with START_PIC from Environment Variables
-        await message.reply_photo(
-            photo=START_PIC,
-            caption=START_MSG.format(
-                first=message.from_user.first_name,
-                mention=message.from_user.mention,
-                id=user_id
-            ),
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about")]])
-        )
-
-@Bot.on_message(filters.command('start') & filters.private)
-async def not_joined(client: Client, message: Message):
-    """Force Subscription message using START_PIC."""
-    buttons = [[InlineKeyboardButton(text="Join Channel", url=client.invitelink)]]
-    try:
-        # Add 'Try Again' button if they were trying to access a file
-        buttons.append([InlineKeyboardButton(text='Try Again', url=f"https://t.me/{client.username}?start={message.command[1]}")])
-    except:
-        pass
-        
-    await message.reply_photo(
-        photo=START_PIC,
-        caption=FORCE_MSG.format(first=message.from_user.first_name, mention=message.from_user.mention),
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-async def delete_files(messages, client, k):
-    """Logic to delete files after the set time in Environment Variables."""
-    await asyncio.sleep(FILE_AUTO_DELETE)
-    for msg in messages:
-        try:
-            await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
-        except: 
-            pass
-    try:
-        await k.edit_text("<b>Your files have been successfully deleted ✅</b>")
-    except: 
-        pass
-        
+                madflix_msgs
+                
