@@ -96,21 +96,12 @@ async def start_command(client: Client, message: Message):
         
         # for madflix_msg in madflix_msgs: 
             # try:
-                # await madflix_msg.delete()
-                # await k.edit_text("Your Video / File Is Successfully Deleted ✅") 
-            # except:    
-                # pass
-
-return
+                        # Ensure this block is aligned with the 'if len(text) > 7:' statement
+        asyncio.create_task(delete_files(madflix_msgs, client, k))
+        return
     else:
-        reply_markup = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton("👋 About Me", callback_data = "about"),
-                    InlineKeyboardButton("🔒 Close", callback_data = "close")
-                ]
-            ]
-        )
+        # This 'else' belongs to the 'if len(text) > 7:' check
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]])
         await message.reply_photo(
             photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
             caption=START_MSG.format(
@@ -121,9 +112,10 @@ return
                 id=message.from_user.id
             ),
             reply_markup=reply_markup,
-            quote=False # Set this to False to remove the reply/forward styling
+            quote=False
         )
         return
+        
 
     
 
