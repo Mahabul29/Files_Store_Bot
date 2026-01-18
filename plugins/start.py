@@ -168,8 +168,8 @@ async def delete_files(messages, client, k):
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
         except:
             pass
-    try:
+        try:
         await k.edit_text("Your Video / File Is Successfully Deleted ✅")
-    except:
+    except Exception:
         pass
-        
+    
