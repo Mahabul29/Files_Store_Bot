@@ -18,7 +18,7 @@
 * `PROTECT_CONTENT` Optional: True if you need to prevent files from forwarding
 * `FORCE_PIC`  Set Your Force Sub Picture 
 * `START_PIC`  Set Your Start massage Picture
-* 
+
 ### EXTRA VARIABLES
 
 * `CUSTOM_CAPTION` put your Custom caption text if you want Setup Custom Caption, you can use HTML and <a href='https://github.com/JishuDeveloper/File-Sharing-Bot/blob/main/README.md#custom_caption'>fillings</a> for formatting (only for documents)
