@@ -7,7 +7,6 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, 
 async def cb_handler(client: Bot, query: CallbackQuery):
     data = query.data
     
-    # 1. Logic for the "About Me" button
     if data == "about":
         await query.message.edit_text(
             text = f"<b>Mʏ Nᴀᴍᴇ :</b> <a href='https://t.me/Files_Store9_Bot'>Nᴏᴛʜɪɴɢ</a>\n"
@@ -16,7 +15,22 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                    f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'>Eᴠᴀ Lɪɴᴋs</a>",
             disable_web_page_preview = True,
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Cʟᴏsᴇ✖️", callback_data = "close")]]
+                [
+                    [
+                        InlineKeyboardButton("🔙 Go Back", callback_data="start"),
+                        InlineKeyboardButton("Close ✖️", callback_data="close")
+                    ]
+                ]
             )
         )
+    
+    # IMPORTANT: You must have this block so the "Back" button works!
+    elif data == "start":
+        await query.message.edit_text(
+            text = "Welcome back to the Main Menu!", # Change this to your start message
+            reply_markup = START_BUTTONS # Ensure START_BUTTONS is defined
+        )
+
+    elif data == "close":
+        await query.message.delete()
         
