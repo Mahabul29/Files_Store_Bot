@@ -19,7 +19,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'>Eᴠᴀ Lɪɴᴋs</a>",
             reply_markup=InlineKeyboardMarkup([
                 [
-                    InlineKeyboardButton("🔙 Gᴏ Bᴀᴄᴋ", callback_data="back_to_start"),
+                    InlineKeyboardButton("Bᴀᴄᴋ", callback_data="back_to_start"),
                     InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")
                 ]
             ])
