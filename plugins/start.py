@@ -91,6 +91,13 @@ async def start_command(client: Client, message: Message):
         # FIX starts here: Move these out of the 'except' and align them correctly
         current_link = f"https://t.me/{client.username}?start={base64_string}"
         
+        # Line 95
+            except:
+                pass
+
+        # FIX: Move current_link out of the loop and except block
+        current_link = f"https://t.me/{client.username}?start={base64_string}"
+        
         k = await client.send_message(
             chat_id=message.from_user.id, 
             text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
@@ -100,6 +107,8 @@ async def start_command(client: Client, message: Message):
         
         asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
+# Line 110
+    
 # Line 99
     else:
         # --- FIXED: Corrected Syntax Error here ---
