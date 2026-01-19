@@ -1,4 +1,4 @@
-from pyrogram import __version__
+from pyrogram import __version__, filters
 from bot import Bot
 from config import OWNER_ID
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -7,40 +7,28 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, 
 async def cb_handler(client: Bot, query: CallbackQuery):
     data = query.data
     
+    # 1. Logic for the "About Me" button
     if data == "about":
         await query.message.edit_text(
-            text = f"<b>🤖 My Name :</b> <a href='https://t.me/Files_Store9_Bot'>File Sharing Bot</a> \n<b>📝 Language :</b> <a href='https://python.org'>Python 3</a> \n<b>📚 Library :</b> <a href='https://pyrogram.org'>Pyrogram {__version__}</a> \n<b>🚀 Server :</b> <a href='https://koyeb.com'>Koyeb</a> \n<b>📢 Channel :</b> <a href='https://t.me/Hindi_Dub_Animes_Official'>Hindi Animes</a> \n<b>🧑‍💻 Developer :</b> <a href='tg://user?id={OWNER_ID}'>@Mahabul201</a>",
+            text = f"<b>🤖 My Name :</b> <a href='https://t.me/Files_Store9_Bot'>File Sharing Bot</a>\n<b>📝 Language :</b> Python 3\n<b>📚 Library :</b> Pyrogram {__version__}\n<b>🚀 Server :</b> Koyeb\n<b>🧑‍💻 Developer :</b> <a href='tg://user?id={OWNER_ID}'>@Mahabul201</a>",
             disable_web_page_preview = True,
             reply_markup = InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton("🔒 Close", callback_data = "close")
-                    ]
-                ]
+                [[InlineKeyboardButton("🔒 Close", callback_data = "close")]]
             )
         )
     
-    # Logic for resending files when "Click Here" is pressed
+    # 2. Logic for resending files when "♻️ Get Files Again" is pressed
     elif data == "refresh_files":
-        await query.answer("Resending your files...", show_alert=False)
-        await query.message.delete()
-        
-        # We import here to avoid circular import issues
-        try:
-            from plugins.start import start 
-            await start(client, query.message)
-        except Exception as e:
-            print(f"Error triggering start: {e}")
+        await query.answer("♻️ Fetching your files again...", show_alert=False)
+        # This will trigger the start logic to resend the media
+        from plugins.start import start_command
+        await start_command(client, query.message)
 
-    # Logic for the "Close X" button in the deleted message notice
+    # 3. Logic for the "Close ✖️" button in the auto-delete notice
     elif data == "close_msg":
         await query.message.delete()
 
-    # Logic for the standard "Close" button
+    # 4. Standard Close button logic
     elif data == "close":
         await query.message.delete()
-        try:
-            await query.message.reply_to_message.delete()
-        except:
-            pass
-            
+        
