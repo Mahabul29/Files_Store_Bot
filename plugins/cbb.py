@@ -7,23 +7,24 @@ from config import START_MSG
 async def cb_handler(client: Client, query: CallbackQuery):
     data = query.data
     
-    if data == "close":
+        if data == "close":
         await query.message.delete()
+
+    elif data == "about":
+        # Ensure 'caption' is followed by a comma before 'reply_markup'
+        caption = f"<b>Mʏ Nᴀᴍᴇ :</b> <a href='https://t.me/Files_Store9_Bot'><b>Nᴏᴛʜɪɴɢ</b></a>\n" \
+                  f"<b>Sᴇʀᴠᴇʀ :</b> <a href='https://app.koyeb.com/'><b>Kᴏʏᴇʙ</b></a>\n" \
+                  f"<b>Dᴇᴠᴇʟᴏᴘᴇʀ :</b> <a href='https://t.me/Mahabul201'><b>@Mᴀʜᴀʙᴜʟ201</b></a>\n" \
+                  f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'><b>Eᴠᴀ Lɪɴᴋs</b></a>"
         
-        elif data == "about":
-        # Removed 'disable_web_page_preview' to fix the TypeError crash
         await query.message.edit_caption(
-            caption=f"<b>Mʏ Nᴀᴍᴇ :</b> <a href='https://t.me/Files_Store9_Bot'><b>Nᴏᴛʜɪɴɢ</b></a>\n"
-                    f"<b>Sᴇʀᴠᴇʀ :</b> <a href='https://app.koyeb.com/'><b>Kᴏʏᴇʙ</b></a>\n"
-                    f"<b>Dᴇᴠᴇʟᴏᴘᴇʀ :</b> <a href='https://t.me/Mahabul201'><b>@Mᴀʜᴀʙᴜʟ201</b></a>\n"
-                    f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'><b>Eᴠᴀ Lɪɴᴋs</b></a>", # <--- ADDED COMMA HERE
+            caption=caption,
             reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton("Bᴀᴄᴋ", callback_data="back_to_start"),
-                    InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")
-                ]
+                [InlineKeyboardButton("Bᴀᴄᴋ", callback_data="back_to_start"),
+                 InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
             ])
-    )
+        )
+        
     
     elif data == "back_to_start":
         # This handles the 'Go Back' action correctly
