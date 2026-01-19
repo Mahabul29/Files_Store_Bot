@@ -17,10 +17,13 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             )
         )
     
-    # 2. Logic for resending files when "♻️ Get Files Again" is pressed
+    # 2. Logic for the "♻️ Get Files Again" button
     elif data == "refresh_files":
         await query.answer("♻️ Fetching your files again...", show_alert=False)
-        # This will trigger the start logic to resend the media
+        # This deletes the "Message Was Deleted" notice and triggers the resend logic
+        await query.message.delete()
+        
+        # Import inside the function to avoid circular import errors
         from plugins.start import start_command
         await start_command(client, query.message)
 
