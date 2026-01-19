@@ -21,12 +21,12 @@ async def delete_files(messages, client, k, original_link):
             pass
     try:
         await k.edit_text(
-    text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\n"
-         "<blockquote><b>Iғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: "
-         "[Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.</b></blockquote>",
-    reply_markup=InlineKeyboardMarkup([
-        [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
-         InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
+            text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\n"
+                 "<blockquote><b>Iғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: "
+                 "[Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.</b></blockquote>",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
+                 InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
             ])
         )
     except:
@@ -43,7 +43,7 @@ async def start_command(client: Client, message: Message):
             pass
             
     text = message.text
-    if len(text)>7:
+    if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
         except:
@@ -57,12 +57,14 @@ async def start_command(client: Client, message: Message):
                 end = int(int(argument[2]) / abs(client.db_channel.id))
             except:
                 return
-            ids = range(start,end+1) if start <= end else []
+            ids = range(start, end + 1) if start <= end else []
         elif len(argument) == 2:
             try:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
             except:
                 return
+        else:
+            return
 
         temp_msg = await message.reply("Pʟᴇᴀsᴇ Wᴀɪᴛ...")
         try:
@@ -84,34 +86,23 @@ async def start_command(client: Client, message: Message):
                 await asyncio.sleep(e.x)
                 madflix_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 madflix_msgs.append(madflix_msg)
-            # Line 87
             except:
                 pass
 
-        # FIX starts here: Move these out of the 'except' and align them correctly
-        current_link = f"https://t.me/{client.username}?start={base64_string}"
-        
-        # Line 95
-            except:
-                pass
-
-        # FIX: Move current_link out of the loop and except block
+        # Corrected link and message handling logic
         current_link = f"https://t.me/{client.username}?start={base64_string}"
         
         k = await client.send_message(
             chat_id=message.from_user.id, 
             text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
-                 f"<blockquote><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ 30 Mɪɴᴜᴛᴇs. "
+                 f"<blockquote><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}. "
                  f"Sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ᴛʜᴇᴍ ᴛᴏ ᴀɴʏ ᴏᴛʜᴇʀ ᴘʟᴀᴄᴇ ғᴏʀ ғᴜᴛᴜʀᴇ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.</b></blockquote>"
         )
         
         asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
-# Line 110
-    
-# Line 99
+
     else:
-        # --- FIXED: Corrected Syntax Error here ---
         await message.reply_photo(
             photo=START_PIC, 
             caption=START_MSG.format(
@@ -131,12 +122,9 @@ async def start_command(client: Client, message: Message):
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     buttons = [[InlineKeyboardButton(text="Jᴏɪɴ Cʜᴀɴɴᴇʟ", url=client.invitelink)]]
-    try:
+    if len(message.command) > 1:
         buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
-    except:
-        pass
 
-    # --- FIXED: Corrected Syntax Error here ---
     await message.reply_photo(
         photo=FORCE_PIC,
         caption=FORCE_MSG.format(
@@ -163,7 +151,7 @@ async def send_text(client: Bot, message: Message):
             await broadcast_msg.copy(chat_id)
             successful += 1
         except FloodWait as e:
-            await asyncio.sleep(e.x) # Handles Telegram rate limits
+            await asyncio.sleep(e.x)
             await broadcast_msg.copy(chat_id)
             successful += 1
         except UserIsBlocked:
