@@ -1,5 +1,5 @@
 import os, asyncio, humanize
-from pyrogram import Client, filters, version
+from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
@@ -83,9 +83,9 @@ async def start_command(client: Client, message: Message):
         k = await client.send_message(chat_id = message.from_user.id, text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete} (Due To Copyright Issues).\n\n📌 Please Forward This Video / File To Somewhere Else And Start Downloading There.")
 
         asyncio.create_task(delete_files(madflix_msgs, client, k))
-        return # FIXED: Properly aligned to fix line 105 error
+        return
 
-    else: # FIXED: Properly aligned to fix line 105 error
+    else:
         reply_markup = InlineKeyboardMarkup(
             [
                 [
@@ -95,7 +95,7 @@ async def start_command(client: Client, message: Message):
             ]
         )
         await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+            photo="https://graph.org/file/e6900f86a63567705cfdf.jpg",
             caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
@@ -117,7 +117,7 @@ async def not_joined(client: Client, message: Message):
         pass
 
     await message.reply_photo(
-        photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+        photo="https://graph.org/file/e6900f86a63567705cfdf.jpg",
         caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name or "",
@@ -162,26 +162,6 @@ async def send_text(client: Bot, message: Message):
         status = f"<b><u>Broadcast Completed</u></b>\n\n<b>Total Users :</b> <code>{total}</code>\n<b>Successful :</b> <code>{successful}</code>\n<b>Blocked Users :</b> <code>{blocked}</code>\n<b>Deleted Accounts :</b> <code>{deleted}</code>\n<b>Unsuccessful :</b> <code>{unsuccessful}</code>"
         return await pls_wait.edit(status)
     else:
-        msg = await message.reply(f"Use This Command As A Reply To Any Telegram Message With Out Any Spaces.")
-        await asyncio.sleep(8)
-        await msg.delete()
-
-async def delete_files(messages, client, k):
-    await asyncio.sleep(FILE_AUTO_DELETE)
-    for msg in messages:
-        try:
-            await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
-        except Exception as e:
-            print(f"Error: {e}")
-
-    # NEW: Updated text and button as requested
-    await k.edit_text(
-        text="Iғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: [⭕ Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.",
-        reply_markup=InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton("⭕ Cʟɪᴄᴋ Hᴇʀᴇ", callback_data="refresh_files"),
-                InlineKeyboardButton("Close ✖️", callback_data="close_msg")
-            ]]
-        )
-        )
-                
+        msg = await message.reply(f"Use This Command As A Reply To Any Telegram Message.")
+        await asyncio
+        
