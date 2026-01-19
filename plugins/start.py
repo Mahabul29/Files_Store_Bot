@@ -10,9 +10,7 @@ from config import (
 from helper_func import subscribed, decode, get_messages
 from database.database import add_user, present_user
 
-# IMPORT: Make sure this matches your route.py button name
-from plugins.route import RECALL_BUTTON
-
+# Note: We are now creating the button dynamically based on the file link
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
@@ -60,34 +58,46 @@ async def start_command(client: Client, message: Message):
                     protect_content=PROTECT_CONTENT
                 )
                 madflix_msgs.append(madflix_msg)
-                await asyncio.sleep(0.5) # Prevent flood waits
+                await asyncio.sleep(0.5) 
             except: pass
 
-        # Notification message with the timer info
+        # --- DYNAMIC BUTTON LOGIC ---
         file_auto_delete = humanize.naturaldelta(FILE_AUTO_DELETE)
+        
+        # This creates the unique "Get Again" link for these specific files
+        share_link = f"https://t.me/{client.me.username}?start={base64_string}"
+        
+        recall_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Get Files Again 🔄", url=share_link)]
+        ])
+
+        # Sending the Warning Message
         k = await client.send_message(
             chat_id=message.from_user.id, 
-            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nYᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}."
+            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nYᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}.",
+            reply_markup=recall_markup
         )
 
-        # Triggers the background delete task
-        asyncio.create_task(delete_files(madflix_msgs, client, k))
+        # Triggers the background delete task and passes the button markup
+        asyncio.create_task(delete_files(madflix_msgs, client, k, recall_markup))
     else:
         # Normal start message
         await message.reply_text(START_MSG)
 
-async def delete_files(messages, client, k):
-    """Wait, delete files, and then show the RECALL_BUTTON"""
+async def delete_files(messages, client, k, recall_markup):
+    """Wait, delete files, and then show the RECALL button"""
     await asyncio.sleep(FILE_AUTO_DELETE)
+    
+    # Delete the actual file messages
     for msg in messages:
         try: await client.delete_messages(msg.chat.id, msg.id)
         except: pass
     
     try:
-        # Edits the warning message to the final "Deleted" state with the button
+        # Edit the warning message to show files are gone, but keep the link
         await k.edit_text(
-            text="**Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ** 🗑️\n\nClick below to get them again:",
-            reply_markup=RECALL_BUTTON
+            text="**Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇs Wᴇʀᴇ Dᴇʟᴇᴛᴇᴅ** 🗑️\n\nClick the button below to get them again:",
+            reply_markup=recall_markup
         )
     except: pass
         
