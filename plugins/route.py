@@ -2,7 +2,8 @@ import asyncio
 from aiohttp import web
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-[span_0](start_span)from config import DELETE_TIME  #[span_0](end_span)
+from config import DELETE_TIME
+
 
 # --- 1. DEFINE THE BUTTONS ---
 RECALL_BUTTON = InlineKeyboardMarkup([
