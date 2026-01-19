@@ -8,7 +8,7 @@ from config import DELETE_TIME
 # --- 1. DEFINE THE BUTTONS ---
 RECALL_BUTTON = InlineKeyboardMarkup([
     [
-        InlineKeyboardButton("⭕ Click Here", callback_data="refresh_files"),
+        InlineKeyboardButton("♻️ Get Files Again", callback_data="refresh_files"),
         InlineKeyboardButton("Close ✖️", callback_data="close_msg")
     ]
 ])
