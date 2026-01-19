@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import os
 
 # Set the delete time in seconds (e.g., 1800 for 30 minutes)
-DELETE_TIME = int(os.environ.get("DELETE_TIME", 1800))
+DELETE_TIME = 60  # Add this on its own line
 
 
 
