@@ -13,10 +13,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif data == "about":
         # Removed 'disable_web_page_preview' to fix the TypeError crash
         await query.message.edit_caption(
-            caption=f"<b>Mʏ Nᴀᴍᴇ :</b> <a href='https://t.me/Files_Store9_Bot'>Nᴏᴛʜɪɴɢ</a>\n"
-                    f"<b>Sᴇʀᴠᴇʀ :</b> <a href='https://app.koyeb.com/'>Kᴏʏᴇʙ</a>\n"
-                    f"<b>Dᴇᴠᴇʟᴏᴘᴇʀ :</b> <a href='https://t.me/Mahabul201'>@Mahabul201</a>\n"
-                    f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'>Eᴠᴀ Lɪɴᴋs</a>",
+            caption=f"<b>Mʏ Nᴀᴍᴇ :</b> <a href='https://t.me/Files_Store9_Bot'><b>Nᴏᴛʜɪɴɢ</b></a>\n" \
+        f"<b>Sᴇʀᴠᴇʀ :</b> <a href='https://app.koyeb.com/'><b>Kᴏʏᴇʙ</b></a>\n" \
+        f"<b>Dᴇᴠᴇʟᴏᴘᴇʀ :</b> <a href='https://t.me/Mahabul201'><b>@Mᴀʜᴀʙᴜʟ201</b></a>\n" \
+        f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'><b>Eᴠᴀ Lɪɴᴋs</b></a>"
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton("Bᴀᴄᴋ", callback_data="back_to_start"),
