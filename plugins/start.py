@@ -84,19 +84,23 @@ async def start_command(client: Client, message: Message):
                 await asyncio.sleep(e.x)
                 madflix_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 madflix_msgs.append(madflix_msg)
+            # Line 87
             except:
                 pass
 
-                current_link = f"https://t.me/{client.username}?start={base64_string}"
+        # FIX starts here: Move these out of the 'except' and align them correctly
+        current_link = f"https://t.me/{client.username}?start={base64_string}"
+        
         k = await client.send_message(
             chat_id=message.from_user.id, 
             text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
                  f"<blockquote><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ 30 Mɪɴᴜᴛᴇs. "
                  f"Sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ᴛʜᴇᴍ ᴛᴏ ᴀɴʏ ᴏᴛʜᴇʀ ᴘʟᴀᴄᴇ ғᴏʀ ғᴜᴛᴜʀᴇ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.</b></blockquote>"
-        ) # <--- THIS WAS THE MISSING BRACKET
+        )
+        
         asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
-        
+# Line 99
     else:
         # --- FIXED: Corrected Syntax Error here ---
         await message.reply_photo(
