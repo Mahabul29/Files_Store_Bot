@@ -24,8 +24,7 @@ async def delete_files(messages, client, k, original_link):
         await k.edit_text(
             text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\nIғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: [Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link)],
-                [InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
+                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link)],"[InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
             ])
         )
     except:
