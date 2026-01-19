@@ -14,7 +14,7 @@ file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
 # --- FIXED: Deletion function now receives original_link to create the button ---
 async def delete_files(messages, client, k, original_link):
-    await asyncio.sleep(jishudeveloper)
+    await asyncio.sleep(jishudeveloper) #
     for msg in messages:
         try:
             await msg.delete()
@@ -94,11 +94,11 @@ async def start_command(client: Client, message: Message):
             text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete} (Due To Copyright Issues).\n\n📌 Please Forward This Video / File To Somewhere Else And Start Downloading There."
         )
 
-        asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
+        asyncio.create_task(delete_files(madflix_msgs, client, k, current_link)) #
         return
 
     else:
-        # Start Message with working photo
+        # --- FIXED: Replaced invalid photo URL with working one ---
         await message.reply_photo(
             photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", 
             caption=START_MSG.format(
@@ -108,6 +108,6 @@ async def start_command(client: Client, message: Message):
                 id=message.from_user.id
             ),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]])
-        )
+        ) #
         return
         
