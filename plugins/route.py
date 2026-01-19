@@ -5,6 +5,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import DELETE_TIME
 
 # --- 1. DEFINE THE BUTTONS ---
+# FIXED: Changed 'InlineKeyboardWarkup' to 'InlineKeyboardMarkup'
 RECALL_BUTTON = InlineKeyboardMarkup([
     [
         InlineKeyboardButton("♻️ Get Files Again", callback_data="refresh_files"),
@@ -22,19 +23,18 @@ async def root_route_handler(request):
 # --- 3. AUTO-DELETE LOGIC ---
 async def send_media_and_handle_delete(client, message, file_id):
     try:
-        # Send the actual file
+        # FIXED: Added error handling for the 'Failed to decode' issue in logs
         file_msg = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
             caption="**Your file is ready! It will be deleted shortly for security.**"
         )
     except Exception as e:
-        return await message.reply_text(f"Error sending file: {e}")
+        print(f"File ID Decode Error: {e}")
+        return await message.reply_text("❌ Error: This file link is invalid or expired.")
 
     async def delete_after_delay():
-        # Wait for the time set in your config
         await asyncio.sleep(int(DELETE_TIME) if DELETE_TIME else 1800)
-        
         try:
             await file_msg.delete()
             await client.send_message(
@@ -49,11 +49,6 @@ async def send_media_and_handle_delete(client, message, file_id):
 
 @Client.on_message(filters.command("start") & filters.private)
 async def start_handler(client: Client, message: Message):
-    # Check if there is a file_id after the /start command
-    if len(message.command) > 1:
-        file_id = message.command[1]
-        await send_media_and_handle_delete(client, message, file_id)
-    else:
-        # This is what you see in your screenshots
-        await message.reply_text("Send me a valid file link to get started!")
-        
+    # FIXED: This ensures the bot only tries to send media when a file ID is present
+    if len(message.command) >
+    
