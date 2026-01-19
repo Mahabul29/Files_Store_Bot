@@ -1,7 +1,7 @@
 import os, asyncio, humanize
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from bot import Bot
 from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE
@@ -20,11 +20,13 @@ async def delete_files(messages, client, k, original_link):
         except:
             pass
     try:
+        # Replaces the notice with the re-request button and a close button
         await k.edit_text(
-            text="<b>Files Deleted! Click below to get them again.</b>",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ", url=original_link)]]
-            )
+            text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\nIғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: [Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link)],
+                [InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
+            ])
         )
     except:
         pass
@@ -101,16 +103,19 @@ async def start_command(client: Client, message: Message):
                 mention=message.from_user.mention,
                 id=message.from_user.id
             ),
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]])
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Aʙᴏᴜᴛ Mᴇ", callback_data="about"), 
+                 InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
+            ])
         )
         return
 
 # --- HANDLER FOR NOT JOINED USERS (FORCE SUB) ---
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    buttons = [[InlineKeyboardButton(text="Join Channel", url=client.invitelink)]]
+    buttons = [[InlineKeyboardButton(text="Jᴏɪɴ Cʜᴀɴɴᴇʟ", url=client.invitelink)]]
     try:
-        buttons.append([InlineKeyboardButton(text='Try Again', url=f"https://t.me/{client.username}?start={message.command[1]}")])
+        buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
     except:
         pass
 
@@ -125,7 +130,16 @@ async def not_joined(client: Client, message: Message):
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-# --- BROADCAST & USER COUNT ---
+# --- CALLBACKS (CLOSE BUTTON) ---
+@Bot.on_callback_query()
+async def cb_handler(client: Client, query: CallbackQuery):
+    if query.data == "close":
+        await query.message.delete()
+        await query.answer("Closed!")
+    elif query.data == "about":
+        await query.answer("This is a File Store Bot!", show_alert=True)
+
+# --- BROADCAST & ADMIN COMMANDS ---
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
