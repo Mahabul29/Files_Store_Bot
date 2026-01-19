@@ -12,8 +12,8 @@ madflixofficials = FILE_AUTO_DELETE
 jishudeveloper = madflixofficials
 file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
-# --- FIXED: Function now updates the "Important" message to show the button ---
-async def delete_files(messages, client, k):
+# --- FIXED: Deletion function now receives original_link to create the button ---
+async def delete_files(messages, client, k, original_link):
     await asyncio.sleep(jishudeveloper)
     for msg in messages:
         try:
@@ -21,11 +21,11 @@ async def delete_files(messages, client, k):
         except:
             pass
     try:
-        # After deleting files, we change the "Important" text to the button message
+        # After deleting, edit the "Important" notice into the "Previous Message" button
         await k.edit_text(
             text="<b>Files Deleted! Click below to get them again.</b>",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ", callback_data="about")]]
+                [[InlineKeyboardButton("Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ", url=original_link)]]
             )
         )
     except:
@@ -86,14 +86,15 @@ async def start_command(client: Client, message: Message):
             except:
                 pass
 
-        # Sending the "Important" notice
+        # --- FIXED: Capture the link and start the updated task ---
+        current_link = f"https://t.me/{client.username}?start={base64_string}"
+
         k = await client.send_message(
             chat_id=message.from_user.id, 
-            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete}."
+            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete} (Due To Copyright Issues).\n\n📌 Please Forward This Video / File To Somewhere Else And Start Downloading There."
         )
 
-        # Triggering the delete and button update
-        asyncio.create_task(delete_files(madflix_msgs, client, k))
+        asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
 
     else:
@@ -108,4 +109,5 @@ async def start_command(client: Client, message: Message):
             ),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("👋 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]])
         )
+        return
         
