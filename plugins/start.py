@@ -111,3 +111,40 @@ async def start_command(client: Client, message: Message):
         ) #
         return
         
+@Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
+async def get_users(client: Bot, message: Message):
+    msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
+    users = await full_userbase()
+    await msg.edit(f"{len(users)} Users Are Using This Bot")
+
+@Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
+async def send_text(client: Bot, message: Message):
+    if message.reply_to_message:
+        query = await full_userbase()
+        broadcast_msg = message.reply_to_message
+        total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
+        pls_wait = await message.reply("<i>Broadcasting Message.. This will Take Some Time</i>")
+        for chat_id in query:
+            try:
+                await broadcast_msg.copy(chat_id)
+                successful += 1
+            except FloodWait as e:
+                await asyncio.sleep(e.x)
+                await broadcast_msg.copy(chat_id)
+                successful += 1
+            except UserIsBlocked:
+                await del_user(chat_id)
+                blocked += 1
+            except InputUserDeactivated:
+                await del_user(chat_id)
+                deleted += 1
+            except:
+                unsuccessful += 1
+            total += 1
+        status = f"<b><u>Broadcast Completed</u></b>\n\n<b>Total Users :</b> <code>{total}</code>\n<b>Successful :</b> <code>{successful}</code>\n<b>Blocked Users :</b> <code>{blocked}</code>\n<b>Deleted Accounts :</b> <code>{deleted}</code>\n<b>Unsuccessful :</b> <code>{unsuccessful}</code>"
+        return await pls_wait.edit(status)
+    else:
+        # --- FIXED: Proper response and return ---
+        await message.reply(f"Use This Command As A Reply To Any Telegram Message.")
+        return
+        
