@@ -139,45 +139,38 @@ async def not_joined(client: Client, message: Message):
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-@Bot.on_callback_query()
-async def cb_handler(client: Client, query: CallbackQuery):
-    if query.data == "close":
-        await query.message.delete()
-    elif query.data == "about":
-        await query.answer("I am a File Store Bot!", show_alert=True)
-
-@Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
-async def get_users(client: Bot, message: Message):
-    msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
-    users = await full_userbase()
-    await msg.edit(f"{len(users)} Users Are Using This Bot")
-
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, message: Message):
-    if message.reply_to_message:
-        query = await full_userbase()
-        broadcast_msg = message.reply_to_message
-        total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
-        pls_wait = await message.reply("<i>Broadcasting...</i>")
-        for chat_id in query:
-            try:
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except UserIsBlocked:
-                await del_user(chat_id)
-                blocked += 1
-            except InputUserDeactivated:
-                await del_user(chat_id)
-                deleted += 1
-            except:
-                unsuccessful += 1
-            total += 1
-        status = f"<b><u>Broadcast Done</u></b>\n\n<b>Total:</b> {total}\n<b>Success:</b> {successful}"
-        return await pls_wait.edit(status)
-    else:
-        await message.reply("Reply to a message to broadcast.")
-        
+    if not message.reply_to_message:
+        return await message.reply("<b>Pʟᴇᴀsᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ʙʀᴏᴀᴅᴄᴀsᴛ ɪᴛ!</b>")
+    
+    query = await full_userbase()
+    broadcast_msg = message.reply_to_message
+    total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
+    pls_wait = await message.reply("<i>📢 Bʀᴏᴀᴅᴄᴀsᴛɪɴɢ... Pʟᴇᴀsᴇ Wᴀɪᴛ.</i>")
+    
+    for chat_id in query:
+        try:
+            await broadcast_msg.copy(chat_id)
+            successful += 1
+        except FloodWait as e:
+            await asyncio.sleep(e.x) # Handles Telegram rate limits
+            await broadcast_msg.copy(chat_id)
+            successful += 1
+        except UserIsBlocked:
+            await del_user(chat_id)
+            blocked += 1
+        except InputUserDeactivated:
+            await del_user(chat_id)
+            deleted += 1
+        except Exception:
+            unsuccessful += 1
+        total += 1
+
+    status = f"<b><u>📢 Bʀᴏᴀᴅᴄᴀsᴛ Cᴏᴍᴘʟᴇᴛᴇᴅ</u></b>\n\n" \
+             f"<b>Total Users:</b> {total}\n" \
+             f"<b>Success:</b> {successful}\n" \
+             f"<b>Blocked:</b> {blocked}\n" \
+             f"<b>Failed:</b> {unsuccessful}"
+    return await pls_wait.edit(status)
+    
