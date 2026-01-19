@@ -1,3 +1,4 @@
+
 import os, asyncio, humanize
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
@@ -12,6 +13,7 @@ madflixofficials = FILE_AUTO_DELETE
 jishudeveloper = madflixofficials
 file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
+# --- Updated layout to match Image 1000125255.jpg ---
 async def delete_files(messages, client, k, original_link):
     await asyncio.sleep(jishudeveloper)
     for msg in messages:
@@ -20,11 +22,14 @@ async def delete_files(messages, client, k, original_link):
         except:
             pass
     try:
-        # Replaces the notice with the re-request button and a close button
+        # Replaces the notice with the specific layout you requested
         await k.edit_text(
-            text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\nIғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: [Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.",
+            text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\n"
+                 "<blockquote>Iғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: "
+                 "[Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.</blockquote>",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link)],"[InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
+                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
+                 InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
             ])
         )
     except:
@@ -94,6 +99,7 @@ async def start_command(client: Client, message: Message):
         return
 
     else:
+        # Matches the start style in Image 1000125255.jpg
         await message.reply_photo(
             photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", 
             caption=START_MSG.format(
@@ -134,11 +140,10 @@ async def not_joined(client: Client, message: Message):
 async def cb_handler(client: Client, query: CallbackQuery):
     if query.data == "close":
         await query.message.delete()
-        await query.answer("Closed!")
     elif query.data == "about":
-        await query.answer("This is a File Store Bot!", show_alert=True)
+        await query.answer("I am a File Store Bot!", show_alert=True)
 
-# --- BROADCAST & ADMIN COMMANDS ---
+# --- BROADCAST SECTION ---
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
@@ -173,4 +178,5 @@ async def send_text(client: Bot, message: Message):
         return await pls_wait.edit(status)
     else:
         await message.reply("Reply to a message to broadcast.")
+        return
         
