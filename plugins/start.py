@@ -1,11 +1,10 @@
-
 import os, asyncio, humanize
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from bot import Bot
-from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE
+from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE, START_PIC, FORCE_PIC
 from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 
@@ -13,7 +12,6 @@ madflixofficials = FILE_AUTO_DELETE
 jishudeveloper = madflixofficials
 file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
-# --- Updated layout to match Image 1000125255.jpg ---
 async def delete_files(messages, client, k, original_link):
     await asyncio.sleep(jishudeveloper)
     for msg in messages:
@@ -22,13 +20,12 @@ async def delete_files(messages, client, k, original_link):
         except:
             pass
     try:
-        # Replaces the notice with the specific layout you requested
         await k.edit_text(
             text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ 🗑️</b>\n\n"
                  "<blockquote>Iғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: "
-                 "[Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.</blockquote>",
+                 "[🔴 Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.</blockquote>",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
+                [InlineKeyboardButton("🔴 Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
                  InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
             ])
         )
@@ -99,10 +96,10 @@ async def start_command(client: Client, message: Message):
         return
 
     else:
-        # Matches the start style in Image 1000125255.jpg
-                await message.reply_photo(
+        # --- FIXED: Corrected Syntax Error here ---
+        await message.reply_photo(
             photo=START_PIC, 
-            caption=START_MSG.format(...)
+            caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
                 mention=message.from_user.mention,
@@ -124,9 +121,10 @@ async def not_joined(client: Client, message: Message):
     except:
         pass
 
-        await message.reply_photo(
+    # --- FIXED: Corrected Syntax Error here ---
+    await message.reply_photo(
         photo=FORCE_PIC,
-        caption=FORCE_MSG.format(...)
+        caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name or "",
             mention=message.from_user.mention,
@@ -135,7 +133,6 @@ async def not_joined(client: Client, message: Message):
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-# --- CALLBACKS (CLOSE BUTTON) ---
 @Bot.on_callback_query()
 async def cb_handler(client: Client, query: CallbackQuery):
     if query.data == "close":
@@ -143,7 +140,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "about":
         await query.answer("I am a File Store Bot!", show_alert=True)
 
-# --- BROADCAST SECTION ---
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
@@ -178,5 +174,4 @@ async def send_text(client: Bot, message: Message):
         return await pls_wait.edit(status)
     else:
         await message.reply("Reply to a message to broadcast.")
-        return
         
