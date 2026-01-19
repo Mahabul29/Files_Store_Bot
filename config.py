@@ -26,7 +26,8 @@ FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
 DELETE_TIME = int(os.environ.get("DELETE_TIME", 1800))
 
 FILE_AUTO_DELETE = int(os.getenv("FILE_AUTO_DELETE", "600")) # auto delete in seconds
-START_PIC = os.environ.get("START_PIC", "https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html")
+START_PIC = os.environ.get("START_PIC", "")
+FORCE_PIC = os.environ.get("FORCE_PIC", "")
 
 PORT = os.environ.get("PORT", "8080")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
