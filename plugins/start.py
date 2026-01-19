@@ -1,158 +1,93 @@
-import os, asyncio, humanize, time, requests
+import os, asyncio, humanize, time
 from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
-
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from bot import Bot
 from config import (
-    ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, 
-    DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE
+    START_MSG, CUSTOM_CAPTION, PROTECT_CONTENT, 
+    FILE_AUTO_DELETE, DISABLE_CHANNEL_BUTTON
 )
-from helper_func import subscribed, encode, decode, get_messages
-from database.database import add_user, del_user, full_userbase, present_user
+from helper_func import subscribed, decode, get_messages
+from database.database import add_user, present_user
 
-# Import the button logic from route.py
+# IMPORT: Make sure this matches your route.py button name
 from plugins.route import RECALL_BUTTON
-
-madflixofficials = FILE_AUTO_DELETE
-jishudeveloper = madflixofficials
-file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     if not await present_user(id):
-        try:
-            await add_user(id)
-        except:
-            pass
+        try: await add_user(id)
+        except: pass
     
     text = message.text
     if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
-        except:
-            return
-        string = await decode(base64_string)
-        argument = string.split("-")
-        
-        if len(argument) == 3:
-            try:
+            string = await decode(base64_string)
+            argument = string.split("-")
+            
+            if len(argument) == 3:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
-            except:
-                return
-            ids = range(start, end + 1) if start <= end else []
-            if start > end:
-                i = start
-                while True:
-                    ids.append(i)
-                    i -= 1
-                    if i < end: break
-        elif len(argument) == 2:
-            try:
+                ids = range(start, end + 1)
+            elif len(argument) == 2:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-            except:
-                return
-        else:
-            return
+            else: return
+        except: return
 
         temp_msg = await message.reply("Pʟᴇᴀsᴇ Wᴀɪᴛ...")
         try:
             messages = await get_messages(client, ids)
         except:
-            await message.reply_text("Something Went Wrong..!")
-            return
+            return await message.reply_text("Something Went Wrong..!")
+        
         await temp_msg.delete()
-    
         madflix_msgs = []
+
         for msg in messages:
             caption = CUSTOM_CAPTION.format(
                 previouscaption="" if not msg.caption else msg.caption.html, 
-                filename=msg.document.file_name
-            ) if bool(CUSTOM_CAPTION) and bool(msg.document) else ("" if not msg.caption else msg.caption.html)
-
-            reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
+                filename=msg.document.file_name if msg.document else "File"
+            ) if bool(CUSTOM_CAPTION) else ("" if not msg.caption else msg.caption.html)
 
             try:
                 madflix_msg = await msg.copy(
                     chat_id=message.from_user.id, 
                     caption=caption, 
                     parse_mode=ParseMode.HTML, 
-                    reply_markup=reply_markup, 
+                    reply_markup=msg.reply_markup if DISABLE_CHANNEL_BUTTON else None, 
                     protect_content=PROTECT_CONTENT
                 )
                 madflix_msgs.append(madflix_msg)
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                madflix_msg = await msg.copy(
-                    chat_id=message.from_user.id, 
-                    caption=caption, 
-                    parse_mode=ParseMode.HTML, 
-                    reply_markup=reply_markup, 
-                    protect_content=PROTECT_CONTENT
-                )
-                madflix_msgs.append(madflix_msg)
-            except:
-                pass
+                await asyncio.sleep(0.5) # Prevent flood waits
+            except: pass
 
-        # Send the "Important" notification message
+        # Notification message with the timer info
+        file_auto_delete = humanize.naturaldelta(FILE_AUTO_DELETE)
         k = await client.send_message(
             chat_id=message.from_user.id, 
-            text=(
-                "<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\n"
-                "⚠️ **Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....**\n\n"
-                f"Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}. "
-                "Sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ᴛʜᴇᴍ ᴛᴏ ᴀɴʏ ᴏᴛʜᴇʀ ᴘʟᴀᴄᴇ ғᴏʀ ғᴜᴛᴜʀᴇ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.\n\n"
-                "**ɴᴏᴛᴇ :** ᴜsᴇ ᴠʟᴄ ᴏʀ ᴀɴʏ ᴏᴛʜᴇʀ ɢᴏᴏᴅ ᴠɪᴅᴇᴏ ᴘʟᴀʏᴇʀ ᴀᴘᴘ ᴛᴏ ᴡᴀᴛᴄʜ ᴛʜᴇ ᴇᴘɪsᴏᴅᴇs ᴡɪᴛʜ ɢᴏᴏᴅ ᴇxᴘᴇʀɪᴇɴᴄᴇ!"
-            )
+            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nYᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}."
         )
 
-        # Start the background deletion task
+        # Triggers the background delete task
         asyncio.create_task(delete_files(madflix_msgs, client, k))
-        return
-
     else:
-        # Standard Start Message
-        reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("Aʙᴏᴜᴛ ᴍᴇ", callback_data="about"), 
-             InlineKeyboardButton("Cʟᴏsᴇ", callback_data="close")]
-        ])
-        await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
-            caption=START_MSG.format(
-                first=message.from_user.first_name,
-                last=message.from_user.last_name or "",
-                username=None if not message.from_user.username else '@' + message.from_user.username,
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=reply_markup,
-            quote=False
-        )
-
-# Other handlers (not_joined, get_users, send_text) remain unchanged...
+        # Normal start message
+        await message.reply_text(START_MSG)
 
 async def delete_files(messages, client, k):
-    """Handles file deletion and updates the notification with the recall button."""
+    """Wait, delete files, and then show the RECALL_BUTTON"""
     await asyncio.sleep(FILE_AUTO_DELETE)
     for msg in messages:
-        try:
-            await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
-        except Exception as e:
-            print(f"Error deleting media {msg.id}: {e}")
+        try: await client.delete_messages(msg.chat.id, msg.id)
+        except: pass
     
-    # This edits the warning message to show the professional Click Here button
     try:
+        # Edits the warning message to the final "Deleted" state with the button
         await k.edit_text(
-            text=(
-                "**Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ** 🗑️\n\n"
-                "If you want to get the files again, then click: "
-                "[⭕ Click Here] button below else close this message."
-            ),
+            text="**Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ** 🗑️\n\nClick below to get them again:",
             reply_markup=RECALL_BUTTON
         )
-    except Exception as e:
-        print(f"Error updating deletion message: {e}")
+    except: pass
         
