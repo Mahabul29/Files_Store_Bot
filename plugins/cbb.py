@@ -11,7 +11,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.edit_text(
             text = f"<b>Mʏ Nᴀᴍᴇ :</b> <a href='https://t.me/Files_Store9_Bot'>Nᴏᴛʜɪɴɢ</a>\n"
                    f"<b>Sᴇʀᴠᴇʀ :</b> <a href='https://app.koyeb.com/'>Kᴏʏᴇʙ</a>\n"
-                   f"<b>Dᴇᴠᴇʟᴏᴘᴇʀ :</b> <a href='tg://user?id={OWNER_ID}'>Moon</a>\n"
+                   f"<b>Dᴇᴠᴇʟᴏᴘᴇʀ :</b> <a https://t.me/Mahabul201'>Moon</a>\n"
                    f"<b>Cʜᴀɴɴᴇʟ :</b> <a href='https://t.me/EvaLinks'>Eᴠᴀ Lɪɴᴋs</a>",
             disable_web_page_preview = True,
             reply_markup = InlineKeyboardMarkup(
