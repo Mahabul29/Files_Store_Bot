@@ -13,7 +13,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             text = f"<b>🤖 My Name :</b> <a href='https://t.me/Files_Store9_Bot'>File Sharing Bot</a>\n<b>📝 Language :</b> Python 3\n<b>📚 Library :</b> Pyrogram {__version__}\n<b>🚀 Server :</b> Koyeb\n<b>🧑‍💻 Developer :</b> <a href='tg://user?id={OWNER_ID}'>@Mahabul201</a>",
             disable_web_page_preview = True,
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🔒 Close", callback_data = "close")]]
+                [[InlineKeyboardButton("Cʟᴏsᴇ✖️", callback_data = "close")]]
             )
         )
     
