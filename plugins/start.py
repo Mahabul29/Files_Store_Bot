@@ -12,6 +12,19 @@ madflixofficials = FILE_AUTO_DELETE
 jishudeveloper = madflixofficials
 file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
+# --- FIXED: Added the missing delete_files function ---
+async def delete_files(messages, client, k):
+    await asyncio.sleep(jishudeveloper)
+    for msg in messages:
+        try:
+            await msg.delete()
+        except:
+            pass
+    try:
+        await k.delete()
+    except:
+        pass
+
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
@@ -94,8 +107,9 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
+        # --- FIXED: Updated with a working image URL ---
         await message.reply_photo(
-            photo="https://graph.org/file/e6900f86a63567705cfdf.jpg",
+            photo="https://telegra.ph/file/7ae14fb3aa5c793466181.jpg", 
             caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
@@ -116,8 +130,9 @@ async def not_joined(client: Client, message: Message):
     except IndexError:
         pass
 
+    # --- FIXED: Updated with a working image URL ---
     await message.reply_photo(
-        photo="https://graph.org/file/e6900f86a63567705cfdf.jpg",
+        photo="https://telegra.ph/file/7ae14fb3aa5c793466181.jpg",
         caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name or "",
@@ -162,6 +177,6 @@ async def send_text(client: Bot, message: Message):
         status = f"<b><u>Broadcast Completed</u></b>\n\n<b>Total Users :</b> <code>{total}</code>\n<b>Successful :</b> <code>{successful}</code>\n<b>Blocked Users :</b> <code>{blocked}</code>\n<b>Deleted Accounts :</b> <code>{deleted}</code>\n<b>Unsuccessful :</b> <code>{unsuccessful}</code>"
         return await pls_wait.edit(status)
     else:
-        msg = await message.reply(f"Use This Command As A Reply To Any Telegram Message.")
-        await asyncio
+        # --- FIXED: Removed incomplete 'await asyncio' ---
+        await message.reply(f"Use This Command As A Reply To Any Telegram Message.")
         
