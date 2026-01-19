@@ -12,7 +12,6 @@ madflixofficials = FILE_AUTO_DELETE
 jishudeveloper = madflixofficials
 file_auto_delete = humanize.naturaldelta(jishudeveloper)
 
-# --- FIXED: Function now receives 'original_link' to update the button ---
 async def delete_files(messages, client, k, original_link):
     await asyncio.sleep(jishudeveloper)
     for msg in messages:
@@ -21,7 +20,6 @@ async def delete_files(messages, client, k, original_link):
         except:
             pass
     try:
-        # This replaces the "Important" notice with the link button
         await k.edit_text(
             text="<b>Files Deleted! Click below to get them again.</b>",
             reply_markup=InlineKeyboardMarkup(
@@ -31,6 +29,7 @@ async def delete_files(messages, client, k, original_link):
     except:
         pass
 
+# --- HANDLER FOR JOINED USERS ---
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
@@ -85,14 +84,11 @@ async def start_command(client: Client, message: Message):
             except:
                 pass
 
-        # Capture the link for the "Previous Message" button
         current_link = f"https://t.me/{client.username}?start={base64_string}"
-
         k = await client.send_message(
             chat_id=message.from_user.id, 
-            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete} (Due To Copyright Issues).\n\n📌 Please Forward This Video / File To Somewhere Else And Start Downloading There."
+            text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis Video / File Will Be Deleted In {file_auto_delete}."
         )
-
         asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
 
@@ -109,7 +105,27 @@ async def start_command(client: Client, message: Message):
         )
         return
 
-# --- BROADCAST SECTION ---
+# --- HANDLER FOR NOT JOINED USERS (FORCE SUB) ---
+@Bot.on_message(filters.command('start') & filters.private)
+async def not_joined(client: Client, message: Message):
+    buttons = [[InlineKeyboardButton(text="Join Channel", url=client.invitelink)]]
+    try:
+        buttons.append([InlineKeyboardButton(text='Try Again', url=f"https://t.me/{client.username}?start={message.command[1]}")])
+    except:
+        pass
+
+    await message.reply_photo(
+        photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
+        caption=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name or "",
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
+
+# --- BROADCAST & USER COUNT ---
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
@@ -122,7 +138,7 @@ async def send_text(client: Bot, message: Message):
         query = await full_userbase()
         broadcast_msg = message.reply_to_message
         total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
-        pls_wait = await message.reply("<i>Broadcasting Message...</i>")
+        pls_wait = await message.reply("<i>Broadcasting...</i>")
         for chat_id in query:
             try:
                 await broadcast_msg.copy(chat_id)
@@ -140,9 +156,8 @@ async def send_text(client: Bot, message: Message):
             except:
                 unsuccessful += 1
             total += 1
-        status = f"<b><u>Broadcast Completed</u></b>\n\n<b>Total:</b> <code>{total}</code>\n<b>Success:</b> <code>{successful}</code>\n<b>Blocked:</b> <code>{blocked}</code>"
+        status = f"<b><u>Broadcast Done</u></b>\n\n<b>Total:</b> {total}\n<b>Success:</b> {successful}"
         return await pls_wait.edit(status)
     else:
-        await message.reply(f"Reply to a message to broadcast it.")
-        return
+        await message.reply("Reply to a message to broadcast.")
         
