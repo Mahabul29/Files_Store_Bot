@@ -49,8 +49,11 @@ async def send_media_and_handle_delete(client, message, file_id):
 
 @Client.on_message(filters.command("start") & filters.private)
 async def start_handler(client: Client, message: Message):
+    # Check if there is a file_id after the /start command
     if len(message.command) > 1:
-        await send_media_and_handle_delete(client, message, message.command[1])
+        file_id = message.command[1]
+        await send_media_and_handle_delete(client, message, file_id)
     else:
+        # This is what you see in your screenshots
         await message.reply_text("Send me a valid file link to get started!")
         
