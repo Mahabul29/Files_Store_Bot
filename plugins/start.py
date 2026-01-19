@@ -100,9 +100,9 @@ async def start_command(client: Client, message: Message):
 
     else:
         # Matches the start style in Image 1000125255.jpg
-        await message.reply_photo(
-            photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html", 
-            caption=START_MSG.format(
+                await message.reply_photo(
+            photo=START_PIC, 
+            caption=START_MSG.format(...)
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
                 mention=message.from_user.mention,
@@ -124,9 +124,9 @@ async def not_joined(client: Client, message: Message):
     except:
         pass
 
-    await message.reply_photo(
-        photo="https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html",
-        caption=FORCE_MSG.format(
+        await message.reply_photo(
+        photo=FORCE_PIC,
+        caption=FORCE_MSG.format(...)
             first=message.from_user.first_name,
             last=message.from_user.last_name or "",
             mention=message.from_user.mention,
