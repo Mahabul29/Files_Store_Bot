@@ -67,7 +67,7 @@ USER_REPLY_TEXT = "❌Don't Send Me Messages Directly I'm Only File Share Bot !"
 
 START_MSG = os.environ.get("START_MESSAGE", "<b>🍁 Hᴇʏ {mention}</b>\n\n<b>ɪ ᴀᴍ ᴀ ꜰɪʟᴇ ꜱᴛᴏʀᴇ ʙᴏᴛ!..ɪ ᴄᴀɴ ᴘʀᴏᴠɪᴅᴇ ᴘʀɪᴠᴀᴛᴇ ꜰɪʟᴇꜱ ᴛʜʀᴏᴜɢʜ ᴀ ꜱᴘᴇᴄɪꜰɪᴄ ʟɪɴᴋ....</b>\n\n<b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - @EvaLinks</b>")
 
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<b>🍁 Hᴇʏ {mention}</b>\n\n<b>ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴏᴜʀ ᴏғғɪᴄɪᴀʟ ᴄʜᴀɴɴᴇʟs ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ</b>")
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<b>🍁 Hᴇʏ {mention}</b>\n\n<b>Yᴏᴜ Mᴜsᴛ Jᴏɪɴ Oᴜʀ Oғғɪᴄɪᴀʟ Cʜᴀɴɴᴇʟs Tᴏ Usᴇ Tʜɪs Bᴏᴛ</b>")
 
 
 
