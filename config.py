@@ -4,8 +4,8 @@ from logging.handlers import RotatingFileHandler
 import os
 
 # --- Essential Configuration ---
-START_PIC = os.environ.get("START_PIC", "https://www.uhdpaper.com/2023/10/anime-girl-sky-sunset-4k-3201m.html?m=0")
-FORCE_PIC = os.environ.get("FORCE_PIC", "https://www.uhdpaper.com/2023/07/genshin-impact-furina-game-4k-161m.html")
+START_PIC = os.environ.get("START_PIC", "")
+FORCE_PIC = os.environ.get("FORCE_PIC", "")
 
 # Set the delete time in seconds (e.g., 1800 for 30 minutes)
 DELETE_TIME = 60  # Add this on its own line
