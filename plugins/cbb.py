@@ -3,6 +3,8 @@ from bot import Bot
 from config import OWNER_ID
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
+# Inside plugins/cbb.py
+
 @Bot.on_callback_query()
 async def cb_handler(client: Bot, query: CallbackQuery):
     data = query.data
@@ -17,18 +19,25 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🔙 Go Back", callback_data="start"),
+                        InlineKeyboardButton("Bᴀᴄᴋ", callback_data="start"),
                         InlineKeyboardButton("Close ✖️", callback_data="close")
                     ]
                 ]
             )
         )
     
-    # IMPORTANT: You must have this block so the "Back" button works!
+    # FIX: Define the buttons here instead of using the undefined 'START_BUTTONS'
     elif data == "start":
         await query.message.edit_text(
-            text = "Welcome back to the Main Menu!", # Change this to your start message
-            reply_markup = START_BUTTONS # Ensure START_BUTTONS is defined
+            text = "<b>Main Menu</b>\n\nSelect an option below:",
+            reply_markup = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton("About", callback_data="about"),
+                        InlineKeyboardButton("Close", callback_data="close")
+                    ]
+                ]
+            )
         )
 
     elif data == "close":
