@@ -40,8 +40,9 @@ async def delete_files(messages, client, k, original_link):
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     
-    # --- 1. MULTI-FORCE SUBSCRIBE CHECK ---
+    # --- 1. MULTI-FORCE SUBSCRIBE LOGIC (ORDERED) ---
     buttons = []
+    join_row = [] # Temp list to hold Channel 1 and 2 side-by-side
     
     # Check First Channel
     if FORCE_SUB_CHANNEL:
@@ -49,9 +50,8 @@ async def start_command(client: Client, message: Message):
             await client.get_chat_member(FORCE_SUB_CHANNEL, id)
         except UserNotParticipant:
             chat = await client.get_chat(FORCE_SUB_CHANNEL)
-            buttons.append([InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 1 📢", url=chat.invite_link)])
-        except Exception as e:
-            print(f"Error checking Channel 1: {e}")
+            join_row.append(InlineKeyboardButton("JOIN CHANNEL 1 📢", url=chat.invite_link))
+        except Exception: pass
 
     # Check Second Channel
     if FORCE_SUB_CHANNEL_2:
@@ -59,14 +59,17 @@ async def start_command(client: Client, message: Message):
             await client.get_chat_member(FORCE_SUB_CHANNEL_2, id)
         except UserNotParticipant:
             chat = await client.get_chat(FORCE_SUB_CHANNEL_2)
-            buttons.append([InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 2 📢", url=chat.invite_link)])
-        except Exception as e:
-            print(f"Error checking Channel 2: {e}")
+            join_row.append(InlineKeyboardButton("JOIN CHANNEL 2 📢", url=chat.invite_link))
+        except Exception: pass
+
+    # Add the join row to buttons if it's not empty
+    if join_row:
+        buttons.append(join_row)
 
     if buttons:
-        # User is missing at least one subscription
+        # Add Try Again on a separate row below
         if len(message.command) > 1:
-            buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ 🔄', url=f"https://t.me/{client.username}?start={message.command[1]}")])
+            buttons.append([InlineKeyboardButton(text='TRY AGAIN ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
         
         return await message.reply_photo(
             photo=FORCE_PIC,
