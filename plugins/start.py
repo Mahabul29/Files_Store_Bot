@@ -1,11 +1,15 @@
 import os, asyncio, humanize
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserNotParticipant
 from bot import Bot
-from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE, START_PIC, FORCE_PIC
-from helper_func import subscribed, encode, decode, get_messages
+from config import (
+    ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, 
+    DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FILE_AUTO_DELETE, 
+    START_PIC, FORCE_PIC, FORCE_SUB_CHANNEL, FORCE_SUB_CHANNEL_2
+)
+from helper_func import encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 
 madflixofficials = FILE_AUTO_DELETE
@@ -32,16 +36,57 @@ async def delete_files(messages, client, k, original_link):
     except:
         pass
 
-# --- HANDLER FOR JOINED USERS ---
-@Bot.on_message(filters.command('start') & filters.private & subscribed)
+@Bot.on_message(filters.command('start') & filters.private)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
+    
+    # --- 1. MULTI-FORCE SUBSCRIBE CHECK ---
+    buttons = []
+    
+    # Check First Channel
+    if FORCE_SUB_CHANNEL:
+        try:
+            await client.get_chat_member(FORCE_SUB_CHANNEL, id)
+        except UserNotParticipant:
+            chat = await client.get_chat(FORCE_SUB_CHANNEL)
+            buttons.append([InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 1 📢", url=chat.invite_link)])
+        except Exception as e:
+            print(f"Error checking Channel 1: {e}")
+
+    # Check Second Channel
+    if FORCE_SUB_CHANNEL_2:
+        try:
+            await client.get_chat_member(FORCE_SUB_CHANNEL_2, id)
+        except UserNotParticipant:
+            chat = await client.get_chat(FORCE_SUB_CHANNEL_2)
+            buttons.append([InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 2 📢", url=chat.invite_link)])
+        except Exception as e:
+            print(f"Error checking Channel 2: {e}")
+
+    if buttons:
+        # User is missing at least one subscription
+        if len(message.command) > 1:
+            buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ 🔄', url=f"https://t.me/{client.username}?start={message.command[1]}")])
+        
+        return await message.reply_photo(
+            photo=FORCE_PIC,
+            caption=FORCE_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name or "",
+                mention=message.from_user.mention,
+                id=id
+            ),
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    # --- 2. DATABASE AND REGISTRATION ---
     if not await present_user(id):
         try:
             await add_user(id)
         except:
             pass
             
+    # --- 3. FILE RETRIEVAL LOGIC ---
     text = message.text
     if len(text) > 7:
         try:
@@ -80,20 +125,19 @@ async def start_command(client: Client, message: Message):
             reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
             try:
-                madflix_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                madflix_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 madflix_msgs.append(madflix_msg)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
-                madflix_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                madflix_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 madflix_msgs.append(madflix_msg)
             except:
                 pass
 
-        # Corrected link and message handling logic
         current_link = f"https://t.me/{client.username}?start={base64_string}"
         
         k = await client.send_message(
-            chat_id=message.from_user.id, 
+            chat_id=id, 
             text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
                  f"<blockquote><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}. "
                  f"Sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ᴛʜᴇᴍ ᴛᴏ ᴀɴʏ ᴏᴛʜᴇʀ ᴘʟᴀᴄᴇ ғᴏʀ ғᴜᴛᴜʀᴇ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.</b></blockquote>"
@@ -102,6 +146,7 @@ async def start_command(client: Client, message: Message):
         asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
 
+    # --- 4. NORMAL START MESSAGE ---
     else:
         await message.reply_photo(
             photo=START_PIC, 
@@ -109,7 +154,7 @@ async def start_command(client: Client, message: Message):
                 first=message.from_user.first_name,
                 last=message.from_user.last_name or "",
                 mention=message.from_user.mention,
-                id=message.from_user.id
+                id=id
             ),
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("Aʙᴏᴜᴛ Mᴇ", callback_data="about"), 
@@ -117,24 +162,6 @@ async def start_command(client: Client, message: Message):
             ])
         )
         return
-
-# --- HANDLER FOR NOT JOINED USERS (FORCE SUB) ---
-@Bot.on_message(filters.command('start') & filters.private)
-async def not_joined(client: Client, message: Message):
-    buttons = [[InlineKeyboardButton(text="Jᴏɪɴ Cʜᴀɴɴᴇʟ", url=client.invitelink)]]
-    if len(message.command) > 1:
-        buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
-
-    await message.reply_photo(
-        photo=FORCE_PIC,
-        caption=FORCE_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name or "",
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
 
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, message: Message):
