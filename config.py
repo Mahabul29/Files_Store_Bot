@@ -25,6 +25,7 @@ DB_NAME = os.environ.get("DB_NAME", "madflixbotz")
 
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", ""))
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
+FORCE_SUB_CHANNEL_2 = int(os.environ.get("FORCE_SUB_CHANNEL_2", "0")) # Added underscore and unique env name
 
 
 DELETE_TIME = int(os.environ.get("DELETE_TIME", 1800))
