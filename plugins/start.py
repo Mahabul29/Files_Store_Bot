@@ -40,7 +40,7 @@ async def delete_files(messages, client, k, original_link):
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     
-    # --- 1. MULTI-FORCE SUBSCRIBE LOGIC (ORDERED LAYOUT) ---
+    # --- 1. MULTI-FORCE SUBSCRIBE LOGIC (ORDERED) ---
     buttons = []
     join_row = [] # Temp list to hold Channel 1 and 2 side-by-side
     
@@ -50,7 +50,7 @@ async def start_command(client: Client, message: Message):
             await client.get_chat_member(FORCE_SUB_CHANNEL, id)
         except UserNotParticipant:
             chat = await client.get_chat(FORCE_SUB_CHANNEL)
-            join_row.append(InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 1 📢", url=chat.invite_link))
+            join_row.append(InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 1", url=chat.invite_link))
         except Exception: pass
 
     # Check Second Channel
@@ -59,15 +59,17 @@ async def start_command(client: Client, message: Message):
             await client.get_chat_member(FORCE_SUB_CHANNEL_2, id)
         except UserNotParticipant:
             chat = await client.get_chat(FORCE_SUB_CHANNEL_2)
-            join_row.append(InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 2 📢", url=chat.invite_link))
+            join_row.append(InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 2", url=chat.invite_link))
         except Exception: pass
 
-    # If user hasn't joined, send FORCE_PIC and Join Buttons
+    # Add the join row to buttons if it's not empty
     if join_row:
-        buttons.append(join_row) # Puts Channel 1 & 2 in the same row
+        buttons.append(join_row)
+
+    if buttons:
+        # Add Try Again on a separate row below
         if len(message.command) > 1:
-            # Add Try Again on a separate row
-            buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ 🔄', url=f"https://t.me/{client.username}?start={message.command[1]}")])
+            buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
         
         return await message.reply_photo(
             photo=FORCE_PIC,
@@ -101,7 +103,8 @@ async def start_command(client: Client, message: Message):
             try:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
-            except:
+
+except:
                 return
             ids = range(start, end + 1) if start <= end else []
         elif len(argument) == 2:
@@ -147,7 +150,7 @@ async def start_command(client: Client, message: Message):
         asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
         return
 
-    # --- 4. NORMAL START MESSAGE WITH START_PIC ---
+    # --- 4. NORMAL START MESSAGE ---
     else:
         await message.reply_photo(
             photo=START_PIC, 
