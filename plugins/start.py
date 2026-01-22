@@ -103,8 +103,7 @@ async def start_command(client: Client, message: Message):
             try:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
-
-except:
+            except:
                 return
             ids = range(start, end + 1) if start <= end else []
         elif len(argument) == 2:
@@ -201,3 +200,4 @@ async def send_text(client: Bot, message: Message):
              f"<b>Blocked:</b> {blocked}\n" \
              f"<b>Failed:</b> {unsuccessful}"
     return await pls_wait.edit(status)
+    
