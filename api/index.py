@@ -2,32 +2,32 @@ import os
 from flask import Flask, request
 import telebot
 
-# Initialize your bot using the environment variable
+# 1. Initialize with threaded=False for Serverless stability
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
 app = Flask(__name__)
 
-# Route to receive updates from Telegram
 @app.route('/' + BOT_TOKEN, methods=['POST'])
 def getMessage():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
-    return "!", 200
+    if request.headers.get('content-type') == 'application/json':
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        return "!", 200
+    else:
+        return "Invalid Content-Type", 403
 
-# Route to set the webhook (Run this once in your browser)
 @app.route("/")
 def webhook():
     bot.remove_webhook()
-    # Replace 'your-vercel-domain.vercel.app' with your actual Vercel URL
+    # Vercel provides VERCEL_URL automatically
     domain = os.getenv("VERCEL_URL") 
     bot.set_webhook(url=f"https://{domain}/{BOT_TOKEN}")
     return "Webhook successfully set!", 200
 
-# Bot logic example: /start command
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "Hello! Your bot is running on Vercel.")
+    bot.reply_to(message, "Hello! Your bot is successfully running on Vercel.")
 
-# Critical: Do NOT use bot.polling() on Vercel.
+# Add your other bot handlers below...
