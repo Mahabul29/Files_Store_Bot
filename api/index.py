@@ -5,7 +5,7 @@ from pyrogram import Client, types
 
 app = Flask(__name__)
 
-# Initialize the Client (Don't use .run() or .start() here)
+# Use your actual Environment Variables from Vercel Settings
 bot = Client(
     "my_bot",
     api_id=int(os.getenv("API_ID")),
@@ -16,14 +16,14 @@ bot = Client(
 
 @app.route('/')
 def home():
-    return "Bot is running", 200
+    return "Bot is Alive!", 200
 
 @app.route('/webhook', methods=['POST'])
 async def handle_webhook():
+    # This wakes up the bot for 10 seconds to process the message
     if request.headers.get('content-type') == 'application/json':
-        # This part is complex because Pyrogram isn't built for webhooks
-        # It's better to just log that we received data for now
-        print("Update received from Telegram")
+        update = await request.get_json()
+        print(f"Received update: {update}")
         return "OK", 200
     return "Forbidden", 403
     
