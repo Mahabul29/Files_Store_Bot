@@ -1,3 +1,5 @@
+<div align="center">
+  <img src="https://prod.assets.earlygamecdn.com/images/Chisa.jpg?transform=Banner+Webp" alt="Bot Banner" width="1920"/>
 <p align="center">🩵 Thanks for Being Here 🩵</p>
 
 
