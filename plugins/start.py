@@ -12,12 +12,11 @@ from config import (
 from helper_func import encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 
-madflixofficials = FILE_AUTO_DELETE
-jishudeveloper = madflixofficials
-file_auto_delete = humanize.naturaldelta(jishudeveloper)
+# Cleaned up: directly use humanized time
+auto_delete_time = humanize.naturaldelta(FILE_AUTO_DELETE)
 
 async def delete_files(messages, client, k, original_link):
-    await asyncio.sleep(jishudeveloper)
+    await asyncio.sleep(FILE_AUTO_DELETE)
     for msg in messages:
         try:
             await msg.delete()
@@ -25,13 +24,14 @@ async def delete_files(messages, client, k, original_link):
             pass
     try:
         await k.edit_text(
-            text="<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ Wᴀs Dᴇʟᴇᴛᴇᴅ...</b>\n\n"
-                 "<blockquote><b>Iғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ɢᴇᴛ ᴛʜᴇ ғɪʟᴇs ᴀɢᴀɪɴ, ᴛʜᴇɴ ᴄʟɪᴄᴋ: "
-                 "[Cʟɪᴄᴋ Hᴇʀᴇ] ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴇʟsᴇ ᴄʟᴏsᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ.</b></blockquote>",
+            text="<blockquote expandable><b>🗑️ Fɪʟᴇs ʜᴀᴠᴇ ʙᴇᴇɴ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇᴅ ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs!\n\n"
+                 "🔄 Wᴀɴᴛ ᴛʜᴇᴍ ʙᴀᴄᴋ? Jᴜsᴛ ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ.</b></blockquote>",
+            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
+                [InlineKeyboardButton("🔄 Cʟɪᴄᴋ Hᴇʀᴇ", url=original_link),
                  InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
-            ])
+            ]),
+            disable_web_page_preview=True
         )
     except:
         pass
@@ -42,7 +42,7 @@ async def start_command(client: Client, message: Message):
     
     # --- 1. MULTI-FORCE SUBSCRIBE LOGIC (ORDERED) ---
     buttons = []
-    join_row = [] # Temp list to hold Channel 1 and 2 side-by-side
+    join_row = []  # Temp list to hold Channel 1 and 2 side-by-side
     
     # Check First Channel
     if FORCE_SUB_CHANNEL:
@@ -79,7 +79,9 @@ async def start_command(client: Client, message: Message):
                 mention=message.from_user.mention,
                 id=id
             ),
-            reply_markup=InlineKeyboardMarkup(buttons)
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True
         )
 
     # --- 2. DATABASE AND REGISTRATION ---
@@ -122,18 +124,18 @@ async def start_command(client: Client, message: Message):
             return
         await temp_msg.delete()
     
-        madflix_msgs = [] 
+        sent_msgs = [] 
         for msg in messages:
             caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name) if bool(CUSTOM_CAPTION) and bool(msg.document) else ("" if not msg.caption else msg.caption.html)
             reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
             try:
-                madflix_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                madflix_msgs.append(madflix_msg)
+                sent_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                sent_msgs.append(sent_msg)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
-                madflix_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                madflix_msgs.append(madflix_msg)
+                sent_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                sent_msgs.append(sent_msg)
             except:
                 pass
 
@@ -142,11 +144,13 @@ async def start_command(client: Client, message: Message):
         k = await client.send_message(
             chat_id=id, 
             text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
-                 f"<blockquote><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {file_auto_delete}. "
-                 f"Sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ᴛʜᴇᴍ ᴛᴏ ᴀɴʏ ᴏᴛʜᴇʀ ᴘʟᴀᴄᴇ ғᴏʀ ғᴜᴛᴜʀᴇ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.</b></blockquote>"
+                 f"<blockquote expandable><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {auto_delete_time}.\n\n"
+                 f"Pʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ/sᴀᴠᴇ ᴛʜᴇᴍ ᴇʟsᴇᴡʜᴇʀᴇ ʙᴇғᴏʀᴇ ᴛʜᴇʏ ᴠᴀɴɪsʜ!</b></blockquote>",
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True
         )
         
-        asyncio.create_task(delete_files(madflix_msgs, client, k, current_link))
+        asyncio.create_task(delete_files(sent_msgs, client, k, current_link))
         return
 
     # --- 4. NORMAL START MESSAGE ---
@@ -159,10 +163,12 @@ async def start_command(client: Client, message: Message):
                 mention=message.from_user.mention,
                 id=id
             ),
+            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("Aʙᴏᴜᴛ Mᴇ", callback_data="about"), 
                  InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
-            ])
+            ]),
+            disable_web_page_preview=True
         )
         return
 
@@ -200,4 +206,3 @@ async def send_text(client: Bot, message: Message):
              f"<b>Blocked:</b> {blocked}\n" \
              f"<b>Failed:</b> {unsuccessful}"
     return await pls_wait.edit(status)
-    
