@@ -48,20 +48,19 @@ USER_REPLY_TEXT = "❌Don't Send Me Messages Directly I'm Only File Share Bot !"
 
 # --- Modified START_MSG & FORCE_MSG with expandable blockquote + small-caps fancy style ---
 # This will give you the exact quoted bubble with left bar, light background, and collapsible on mobile
-START_MSG = os.environ.get(
+START_MESSAGE = os.environ.get(
     "START_MESSAGE",
     "<blockquote expandable><b>🍁 Hᴇʏ {mention}</b>\n\n"
     "<b>ɪ ᴀᴍ ᴀ ꜰɪʟᴇ ꜱᴛᴏʀᴇ ʙᴏᴛ!..ɪ ᴄᴀɴ ᴘʀᴏᴠɪᴅᴇ ᴘʀɪᴠᴀᴛᴇ ꜰɪʟᴇꜱ ᴛʜʀᴏᴜɢʜ ᴀ ꜱᴘᴇᴄɪꜰɪᴄ ʟɪɴᴋ....</b>\n\n"
     "<b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - @EvaLinks</b></blockquote>"
 )
 
-FORCE_MSG = os.environ.get(
+FORCE_SUB_MESSAGE = os.environ.get(
     "FORCE_SUB_MESSAGE",
     "<blockquote expandable><b>🍁 Hᴇʏ {mention}</b>\n\n"
     "<b>ʜᴇʟʟᴏ! ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴏᴜʀ ᴏғғɪᴄɪᴀʟ ᴄʜᴀɴɴᴇʟ(s) ғɪʀsᴛ...</b>\n\n"
     "<b>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ(s) ʙᴇʟᴏᴡ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ! 👇</b></blockquote>"
 )
-
 # --- Logging Setup ---
 LOG_FILE_NAME = "filesharingbot.txt"
 
