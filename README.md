@@ -1,8 +1,7 @@
 <div align="center">
-  <img src="https://prod.assets.earlygamecdn.com/images/Chisa.jpg?transform=Banner+Webp" alt="Bot Banner" width="1920"/>
-<p align="center">🩵 Thanks for Being Here 🩵</p>
-### CONFIGS VARIABLES
-
+<img src="https://prod.assets.earlygamecdn.com/images/Chisa.jpg?transform=Banner+Webp" alt="Bot Banner" width="800"/>
+<p>🩵 <b>Thanks for Being Here</b> 🩵</p>
+</div>
 * `API_HASH` Your API Hash from my.telegram.org
 * `APP_ID` Your API ID from my.telegram.org
 * `BOT_TOKEN` Your bot token from @BotFather
