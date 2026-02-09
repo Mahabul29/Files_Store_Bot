@@ -12,7 +12,7 @@ from config import (
 from helper_func import encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 
-# Cleaned up: directly use humanized time
+# Humanized delete time for display
 auto_delete_time = humanize.naturaldelta(FILE_AUTO_DELETE)
 
 async def delete_files(messages, client, k, original_link):
@@ -40,11 +40,10 @@ async def delete_files(messages, client, k, original_link):
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     
-    # --- 1. MULTI-FORCE SUBSCRIBE LOGIC (ORDERED) ---
+    # --- 1. MULTI-FORCE SUBSCRIBE LOGIC ---
     buttons = []
-    join_row = []  # Temp list to hold Channel 1 and 2 side-by-side
+    join_row = []
     
-    # Check First Channel
     if FORCE_SUB_CHANNEL:
         try:
             await client.get_chat_member(FORCE_SUB_CHANNEL, id)
@@ -53,7 +52,6 @@ async def start_command(client: Client, message: Message):
             join_row.append(InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 1", url=chat.invite_link))
         except Exception: pass
 
-    # Check Second Channel
     if FORCE_SUB_CHANNEL_2:
         try:
             await client.get_chat_member(FORCE_SUB_CHANNEL_2, id)
@@ -62,12 +60,10 @@ async def start_command(client: Client, message: Message):
             join_row.append(InlineKeyboardButton("Jᴏɪɴ Cʜᴀɴɴᴇʟ 2", url=chat.invite_link))
         except Exception: pass
 
-    # Add the join row to buttons if it's not empty
     if join_row:
         buttons.append(join_row)
-
+        
     if buttons:
-        # Add Try Again on a separate row below
         if len(message.command) > 1:
             buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
         
@@ -80,18 +76,18 @@ async def start_command(client: Client, message: Message):
                 id=id
             ),
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True
+            reply_markup=InlineKeyboardMarkup(buttons)
+            # Removed disable_web_page_preview=True → not supported here
         )
 
-    # --- 2. DATABASE AND REGISTRATION ---
+    # --- 2. DATABASE ---
     if not await present_user(id):
         try:
             await add_user(id)
         except:
             pass
             
-    # --- 3. FILE RETRIEVAL LOGIC ---
+    # --- 3. FILE RETRIEVAL ---
     text = message.text
     if len(text) > 7:
         try:
@@ -167,8 +163,8 @@ async def start_command(client: Client, message: Message):
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("Aʙᴏᴜᴛ Mᴇ", callback_data="about"), 
                  InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
-            ]),
-            disable_web_page_preview=True
+            ])
+            # Removed disable_web_page_preview=True → not supported here
         )
         return
 
