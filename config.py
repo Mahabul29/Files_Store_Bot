@@ -72,7 +72,6 @@ FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<blockquote><b>🍁 Hᴇʏ {men
 
 
 
-
 ADMINS.append(OWNER_ID)
 ADMINS.append(6848088376)
 
