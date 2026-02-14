@@ -55,10 +55,14 @@ START_MSG = os.environ.get(
 
 FORCE_MSG = os.environ.get(
     "FORCE_SUB_MESSAGE",
-    "<blockquote expandable><b>🍁 Hᴇʏ {mention}</b>\n\n"
-    "<b>ʜᴇʟʟᴏ! ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴏᴜʀ ᴏғғɪᴄɪᴀʟ ᴄʜᴀɴɴᴇʟ(s) ғɪʀsᴛ...</b>\n\n"
-    "<b>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ(s) ʙᴇʟᴏᴡ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ! 👇</b></blockquote>"
+    "<blockquote expandable>"
+    "<b>⚠️ ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ !</b>\n\n"
+    "<blockquote><b>ʜᴇʟʟᴏ {mention}, ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴏᴜʀ ᴏғғɪᴄɪᴀʟ ᴄʜᴀɴɴᴇʟs ᴛᴏ ᴜɴʟᴏᴄᴋ ᴛʜɪs ʙᴏᴛ.</b></blockquote>\n\n"
+    "<b>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴛʜᴇ ᴄʜᴀɴɴᴇʟs ʙᴇʟᴏᴡ ᴀɴᴅ ᴄʟɪᴄᴋ ᴏɴ 'ᴛʀʏ ᴀɢᴀɪɴ' ʙᴜᴛᴛᴏɴ! 👇</b>\n\n"
+    "<b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - @EvaLinks</b>"
+    "</blockquote>"
 )
+
 # --- Logging Setup ---
 LOG_FILE_NAME = "filesharingbot.txt"
 
