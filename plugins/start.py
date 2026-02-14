@@ -23,6 +23,7 @@ async def delete_files(messages, client, k, original_link):
         except:
             pass
     try:
+        # Auto-delete message with Quote Design
         await k.edit_text(
             text="<blockquote expandable><b>🗑️ Fɪʟᴇs ʜᴀᴠᴇ ʙᴇᴇɴ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇᴅ ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs!\n\n"
                  "🔄 Wᴀɴᴛ ᴛʜᴇᴍ ʙᴀᴄᴋ? Jᴜsᴛ ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ.</b></blockquote>",
@@ -65,21 +66,21 @@ async def start_command(client: Client, message: Message):
         
     if buttons:
         if len(message.command) > 1:
-            buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
-        await message.reply_photo(
-            photo=START_PIC,
-            caption=START_MSG.format(
-                first=message.from_user.first_name,
-                last=message.from_user.last_name,
-                username=None if not message.from_user.username else '@' + message.from_user.username,
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=reply_markup,
-            message_effect_id=5104841245755180586)  # 🔥
+            buttons.append([InlineKeyboardButton(text='🔄 Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
         
+        # Force Sub Message with Quote Design
+        await message.reply_photo(
+            photo=FORCE_PIC,
+            caption=f"<blockquote expandable>{FORCE_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name or '',
+                mention=message.from_user.mention,
+                id=id
+            )}</blockquote>",
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
         return
-            
 
     # --- 2. DATABASE ---
     if not await present_user(id):
@@ -93,113 +94,70 @@ async def start_command(client: Client, message: Message):
     if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
-        except:
-            return
-        string = await decode(base64_string)
-        argument = string.split("-")
-        
-        if len(argument) == 3:
-            try:
+            string = await decode(base64_string)
+            argument = string.split("-")
+            
+            if len(argument) == 3:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
-            except:
-                return
-            ids = range(start, end + 1) if start <= end else []
-        elif len(argument) == 2:
-            try:
+                ids = range(start, end + 1)
+            elif len(argument) == 2:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-            except:
+            else:
                 return
-        else:
-            return
 
-        temp_msg = await message.reply("Pʟᴇᴀsᴇ Wᴀɪᴛ...")
-        try:
+            temp_msg = await message.reply("<blockquote><b>Pʟᴇᴀsᴇ Wᴀɪᴛ... ⌛</b></blockquote>", parse_mode=ParseMode.HTML)
             messages = await get_messages(client, ids)
-        except:
-            await message.reply_text("Something Went Wrong..!")
-            return
-        await temp_msg.delete()
+            await temp_msg.delete()
     
-        sent_msgs = [] 
-        for msg in messages:
-            caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name) if bool(CUSTOM_CAPTION) and bool(msg.document) else ("" if not msg.caption else msg.caption.html)
-            reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
+            sent_msgs = [] 
+            for msg in messages:
+                caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name) if bool(CUSTOM_CAPTION) and bool(msg.document) else ("" if not msg.caption else msg.caption.html)
+                reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
-            try:
-                sent_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                sent_msgs.append(sent_msg)
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                sent_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                sent_msgs.append(sent_msg)
-            except:
-                pass
+                try:
+                    sent_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    sent_msgs.append(sent_msg)
+                except FloodWait as e:
+                    await asyncio.sleep(e.x)
+                    sent_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    sent_msgs.append(sent_msg)
+                except:
+                    pass
 
-        current_link = f"https://t.me/{client.username}?start={base64_string}"
-        
-        k = await client.send_message(
-            chat_id=id, 
-            text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
-                 f"<blockquote expandable><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {auto_delete_time}.\n\n"
-                 f"Pʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ/sᴀᴠᴇ ᴛʜᴇᴍ ᴇʟsᴇᴡʜᴇʀᴇ ʙᴇғᴏʀᴇ ᴛʜᴇʏ ᴠᴀɴɪsʜ!</b></blockquote>",
-            parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True
-        )
-        
-        asyncio.create_task(delete_files(sent_msgs, client, k, current_link))
-        return
+            current_link = f"https://t.me/{client.username}?start={base64_string}"
+            
+            # File Expiry Notification with Quote Design
+            k = await client.send_message(
+                chat_id=id, 
+                text=f"<b>❗️ <u>Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....</u></b>\n\n"
+                     f"<blockquote expandable><b>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ {auto_delete_time}.\n\n"
+                     f"Pʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ/sᴀᴠᴇ ᴛʜᴇᴍ ᴇʟsᴇᴡʜᴇʀᴇ ʙᴇғᴏʀᴇ ᴛʜᴇʏ ᴠᴀɴɪsʜ!</b></blockquote>",
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True
+            )
+            
+            asyncio.create_task(delete_files(sent_msgs, client, k, current_link))
+            return
+        except Exception as e:
+            await message.reply_text(f"<blockquote><b>Eʀʀᴏʀ:</b> {e}</blockquote>", parse_mode=ParseMode.HTML)
+            return
 
     # --- 4. NORMAL START MESSAGE ---
     else:
         await message.reply_photo(
             photo=START_PIC, 
-            caption=START_MSG.format(
+            caption=f"<blockquote expandable>{START_MSG.format(
                 first=message.from_user.first_name,
-                last=message.from_user.last_name or "",
+                last=message.from_user.last_name or '',
                 mention=message.from_user.mention,
                 id=id
-            ),
+            )}</blockquote>",
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Aʙᴏᴜᴛ Mᴇ", callback_data="about"), 
-                 InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]
+                [InlineKeyboardButton("👤 Aʙᴏᴜᴛ Mᴇ", callback_data="about"), 
+                 InlineKeyboardButton("✖️ Cʟᴏsᴇ", callback_data="close")]
             ])
-            # Removed disable_web_page_preview=True → not supported here
         )
         return
-
-@Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
-async def send_text(client: Bot, message: Message):
-    if not message.reply_to_message:
-        return await message.reply("<b>Pʟᴇᴀsᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ʙʀᴏᴀᴅᴄᴀsᴛ ɪᴛ!</b>")
-    
-    query = await full_userbase()
-    broadcast_msg = message.reply_to_message
-    total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
-    pls_wait = await message.reply("<i>📢 Bʀᴏᴀᴅᴄᴀsᴛɪɴɢ... Pʟᴇᴀsᴇ Wᴀɪᴛ.</i>")
-    
-    for chat_id in query:
-        try:
-            await broadcast_msg.copy(chat_id)
-            successful += 1
-        except FloodWait as e:
-            await asyncio.sleep(e.x)
-            await broadcast_msg.copy(chat_id)
-            successful += 1
-        except UserIsBlocked:
-            await del_user(chat_id)
-            blocked += 1
-        except InputUserDeactivated:
-            await del_user(chat_id)
-            deleted += 1
-        except Exception:
-            unsuccessful += 1
-        total += 1
-
-    status = f"<b><u>📢 Bʀᴏᴀᴅᴄᴀsᴛ Cᴏᴍᴘʟᴇᴛᴇᴅ</u></b>\n\n" \
-             f"<b>Total Users:</b> {total}\n" \
-             f"<b>Success:</b> {successful}\n" \
-             f"<b>Blocked:</b> {blocked}\n" \
-             f"<b>Failed:</b> {unsuccessful}"
-    return await pls_wait.edit(status)
+        
