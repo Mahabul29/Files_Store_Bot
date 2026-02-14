@@ -67,22 +67,18 @@ async def start_command(client: Client, message: Message):
         if len(message.command) > 1:
             buttons.append([InlineKeyboardButton(text='Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
         
-        return await message.reply_photo(
-    photo=FORCE_PIC,
-    caption=FORCE_MSG.format(
-        first=message.from_user.first_name,
-        last=message.from_user.last_name or "",
-        mention=message.from_user.mention,
-        id=id
-    ),
-    parse_mode="html", # Changing this to "html" often fixes rendering issues
-    reply_markup=InlineKeyboardMarkup(buttons)
-        )
-        
+                return await message.reply_photo(
+            photo=FORCE_PIC,
+            caption=FORCE_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name or "",
+                mention=message.from_user.mention,
+                id=id
+            ),
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(buttons)
-            # Removed disable_web_page_preview=True → not supported here
-        )
+                )
+            
 
     # --- 2. DATABASE ---
     if not await present_user(id):
