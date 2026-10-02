@@ -1,55 +1,62 @@
 import os
-import discord
-from discord.ext import commands
+import sys
+from pyromod import listen  # Enables pyromod monkeypatches for Pyrogram
+from pyrogram import Client
+from pymongo import MongoClient
 
-# Configure bot intents (permissions for event handling)
-intents = discord.Intents.default()
-intents.message_content = True  # Required to read message content
-
-class Bot(commands.Bot):
+class Bot(Client):
     def __init__(self):
+        # Fetch configuration variables from environment
+        api_id = os.getenv("API_ID")
+        api_hash = os.getenv("API_HASH")
+        bot_token = os.getenv("BOT_TOKEN")
+        mongo_uri = os.getenv("MONGO_URI")
+
+        # Basic environment variable validation
+        if not all([api_id, api_hash, bot_token]):
+            print("Error: Missing one of API_ID, API_HASH, or BOT_TOKEN in environment variables.")
+            sys.exit(1)
+
+        # Initialize Pyrogram Client
         super().__init__(
-            command_prefix="!",
-            intents=intents,
-            help_command=commands.DefaultHelpCommand()
+            name="TelegramBot",
+            api_id=int(api_id),
+            api_hash=api_hash,
+            bot_token=bot_token,
+            plugins=dict(root="plugins")  # Automatically load command files from /plugins directory if present
         )
 
-    async def setup_hook(self):
-        """Runs before the bot starts connecting to Discord."""
-        print("Initializing bot setup...")
+        # Initialize MongoDB Connection
+        if mongo_uri:
+            try:
+                self.mongo_client = MongoClient(mongo_uri)
+                self.db = self.mongo_client["bot_database"]
+                print("Connected to MongoDB successfully.")
+            except Exception as e:
+                print(f"Failed to connect to MongoDB: {e}")
+                self.db = None
+        else:
+            print("Warning: MONGO_URI not set. Running without MongoDB.")
+            self.db = None
 
-    async def on_ready(self):
-        """Triggered when the bot successfully logs in."""
-        print(f"Logged in successfully as {self.user} (ID: {self.user.id})")
-        print("Bot is ready to accept commands.")
+    async def start(self):
+        """Called when the bot starts up."""
+        await super().start()
+        me = await self.get_me()
+        print(f"Bot started successfully as @{me.username} (ID: {me.id})")
 
-    async def on_message(self, message: discord.Message):
-        """Processes incoming messages."""
-        # Prevent the bot from responding to its own messages
-        if message.author.bot:
-            return
-
-        # Process registered commands
-        await self.process_commands(message)
-
-    def run(self):
-        """Retrieves token from environment variables and launches the bot."""
-        token = os.getenv("DISCORD_TOKEN")
-        if not token:
-            raise ValueError(
-                "DISCORD_TOKEN environment variable is not set. "
-                "Please add it to your environment or .env file."
-            )
-        super().run(token)
-
-
-# Basic example command: !ping
-@commands.command(name="ping")
-async def ping(ctx: commands.Context):
-    """Responds with 'Pong!' and latency."""
-    latency = round(ctx.bot.latency * 1000)
-    await ctx.send(f"Pong! 🏓 ({latency}ms)")
+    async def stop(self, *args):
+        """Called when the bot shuts down."""
+        await super().stop(*args)
+        if hasattr(self, "mongo_client") and self.mongo_client:
+            self.mongo_client.close()
+            print("MongoDB connection closed.")
+        print("Bot stopped.")
 
 
-# Attach command to the bot class instance before export
-Bot.add_command(ping)
+# Basic Pyrogram handler example using class method
+@Client.on_message()
+async def sample_handler(client, message):
+    # Pass execution to standard plugins/handlers
+    pass
+    
